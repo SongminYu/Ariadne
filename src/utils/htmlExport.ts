@@ -289,23 +289,16 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
 
         // Render Edges
         function renderEdges() {
-            console.log('[Ariadne Export] renderEdges called');
-            console.log('[Ariadne Export] Edges array length:', edges.length);
-            console.log('[Ariadne Export] Edges data:', JSON.stringify(edges));
-            
             // Clear existing
             while (connectionsSvg.firstChild) {
                 connectionsSvg.removeChild(connectionsSvg.firstChild);
             }
 
             const ns = "http://www.w3.org/2000/svg";
-            let pathCount = 0;
             
-            edges.forEach((edge, i) => {
-                console.log('[Ariadne Export] Processing edge', i, ':', edge.source, '->', edge.target);
+            edges.forEach(edge => {
                 const source = nodes.find(n => n.id === edge.source);
                 const target = nodes.find(n => n.id === edge.target);
-                console.log('[Ariadne Export] Source found:', !!source, 'Target found:', !!target);
                 
                 if (source && target) {
                     const sx = source.position.x + 280; // Right side
@@ -318,7 +311,6 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
                     const c2x = tx - dist * 0.5;
                     
                     const d = \`M \${sx} \${sy} C \${c1x} \${sy}, \${c2x} \${ty}, \${tx} \${ty}\`;
-                    console.log('[Ariadne Export] Path d:', d);
                     
                     const path = document.createElementNS(ns, "path");
                     path.setAttribute("d", d);
@@ -328,12 +320,8 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
                     path.setAttribute("stroke-opacity", "0.6");
                     
                     connectionsSvg.appendChild(path);
-                    pathCount++;
                 }
             });
-            
-            console.log('[Ariadne Export] Total paths created:', pathCount);
-            console.log('[Ariadne Export] SVG children:', connectionsSvg.children.length);
         }
         renderEdges();
 
