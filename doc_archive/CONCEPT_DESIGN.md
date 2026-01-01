@@ -11,10 +11,13 @@
 ### 其他
 
 - 思维导图大多时候用来总结，脑袋里已经有相当的内容，用它展示出来。其实它也可以是自己生长出来的。
+
+### 新功能
+
 - 下载功能：下载html和md文件一起的压缩包
 - 用户可以付费申请一个api key
 - 整个网站ui
-- 增加system prompt
+- 改良system prompt，支持用户自己增加system prompt？
 - feedback email
 
 ## 2. 产品设计

@@ -7,7 +7,7 @@ import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
-import { Key } from 'lucide-react';
+import { Key, Mail } from 'lucide-react';
 import { generateSingleFileHTML } from '@/utils/htmlExport';
 
 // 动态导入 Canvas 组件以避免 SSR 问题
@@ -434,6 +434,19 @@ ${context}`;
           <Key className="w-4 h-4" />
         </button>
 
+        {/* Feedback Button - Bottom Left */}
+        <a
+          href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
+          className="fixed bottom-4 right-4 p-2.5 rounded-lg z-50
+                     bg-white/5 backdrop-blur-md border border-white/10
+                     text-white/40 hover:text-white/70 hover:bg-white/10
+                     transition-all flex items-center gap-2"
+          title="Send Feedback"
+        >
+          <Mail className="w-4 h-4" />
+          <span className="text-xs">Feedback</span>
+        </a>
+
         {/* 背景网格 */}
         <div
           className="absolute inset-0 opacity-20"
@@ -577,6 +590,19 @@ ${context}`;
           <span className="text-xs text-white/60">Saved</span>
         </div>
       </div>
+
+      {/* Feedback Button - Bottom Left */}
+      <a
+        href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
+        className="fixed bottom-4 right-4 p-2.5 rounded-lg z-50
+                   bg-white/5 backdrop-blur-md border border-white/10
+                   text-white/40 hover:text-white/70 hover:bg-white/10
+                   transition-all flex items-center gap-2"
+        title="Send Feedback"
+      >
+        <Mail className="w-4 h-4" />
+        <span className="text-xs">Feedback</span>
+      </a>
 
       {/* Reset confirm dialog */}
       <ConfirmDialog
