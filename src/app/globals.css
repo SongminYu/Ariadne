@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* ================================
+   Ariadne Theme System
+   ================================ */
+
+/* Default: Biomimetic Light (Dark Mode) */
+:root {
+  /* Canvas */
+  --canvas-bg: #0a0a1a;
+  --canvas-grid: rgba(100, 200, 255, 0.03);
+
+  /* Nodes */
+  --node-bg: rgba(255, 255, 255, 0.05);
+  --node-border: rgba(255, 255, 255, 0.1);
+  --node-glow: rgba(100, 200, 255, 0.15);
+  --node-shadow: 0 0 30px rgba(100, 200, 255, 0.1);
+
+  /* Tendrils (Connections) */
+  --tendril-color: rgba(100, 200, 255, 0.8);
+  --tendril-glow: rgba(100, 200, 255, 0.3);
+
+  /* Text */
+  --text-primary: #f0f0f0;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.3);
+
+  /* Accent */
+  --accent-primary: #4a9eff;
+  --accent-glow: rgba(74, 158, 255, 0.4);
+
+  /* Legacy support */
+  --background: #0a0a1a;
+  --foreground: #f0f0f0;
+}
+
+/* Theme: Sophisticated Paper (Light Mode) */
+:root[data-theme="sophisticated-paper"] {
+  --canvas-bg: #f8f5f0;
+  --canvas-grid: rgba(0, 0, 0, 0.03);
+
+  --node-bg: #ffffff;
+  --node-border: rgba(0, 0, 0, 0.08);
+  --node-glow: none;
+  --node-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  --tendril-color: #555555;
+  --tendril-glow: none;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(0, 0, 0, 0.3);
+
+  --accent-primary: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.2);
+
+  --background: #f8f5f0;
+  --foreground: #1a1a1a;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  overflow: hidden;
+  /* Prevent body scroll */
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* KaTeX Alignment Fixes */
+.katex-display {
+  text-align: left !important;
+  margin: 1em 0;
+  padding-left: 1em;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-error {
+  color: #ef4444;
+}
