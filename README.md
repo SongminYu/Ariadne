@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ariadne
 
-## Getting Started
+> *Follow the thread of thought*
 
-First, run the development server:
+**Ariadne** is an AI-powered canvas for non-linear thinking. It transforms the traditional chat interface into a visual thought map where ideas branch, connect, and evolve naturally.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## The Problem
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Human thinking rarely follows a straight line—it branches, backtracks, and leaps. Yet conventional AI chat interfaces enforce a rigid linear structure that:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Flattens the natural branching paths of exploration
+- Makes it difficult to maintain focus when reviewing past conversations  
+- Forces users to repeatedly re-explain context for follow-up questions
+- Causes **context drift** as language models struggle with redundant background information
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## The Solution: Selection-to-Question
 
-## Learn More
+Ariadne introduces a simple but powerful interaction: **select any text in an AI response to ask a follow-up question**.
 
-To learn more about Next.js, take a look at the following resources:
+This design is built on a practical insight: in any coherent inquiry, the starting point for each new question always lies somewhere within a previous answer.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### How It Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Card-based conversations** — Each Q&A exchange is displayed as a visual card
+2. **Anchor selection** — Highlight any text within a response to create a precise context anchor
+3. **Automatic context** — The selected text becomes part of your next prompt, giving the AI clean, focused context
+4. **Visual connections** — Each selection creates a link between cards, organically weaving your linear chat into a **Global Thought Map**
 
-## Deploy on Vercel
+### The Result
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 🎯 **Precise context** — No more re-explaining what you meant
+- 🔄 **Zero drift** — The AI always knows exactly what you're building on
+- 🗺️ **Visual overview** — See your entire exploration at a glance
+- 🔀 **Natural branching** — Return to any node to start a new line of inquiry
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+*Built with Next.js, React Flow, and modern AI APIs.*

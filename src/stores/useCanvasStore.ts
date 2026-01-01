@@ -12,6 +12,7 @@ export interface NodeContent {
 }
 
 export interface NodeData {
+    [key: string]: unknown;  // Index signature for xyflow compatibility
     content: NodeContent;
     parent_id: string | null;
     source_anchor?: {

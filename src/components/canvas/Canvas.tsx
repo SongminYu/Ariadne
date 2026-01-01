@@ -48,7 +48,8 @@ function CanvasInner() {
         setHighlightedPath,
     } = useCanvasStore();
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes as any);
     const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges);
     const [currentZoom, setCurrentZoom] = useState(1);
 
@@ -86,7 +87,7 @@ function CanvasInner() {
 
     // 同步 Store 变化到本地状态
     useEffect(() => {
-        setNodes(storeNodes as Node[]);
+        setNodes(storeNodes);
     }, [storeNodes, setNodes]);
 
     useEffect(() => {
