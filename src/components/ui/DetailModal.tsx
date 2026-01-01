@@ -368,6 +368,10 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                                                [&_a]:text-cyan-400 [&_a]:no-underline hover:[&_a]:underline
                                                                [&_blockquote]:border-l-cyan-400/50 [&_blockquote]:bg-white/5 [&_blockquote]:px-4 [&_blockquote]:py-2
                                                                [&_pre]:bg-white/5 [&_pre]:rounded-lg [&_pre]:p-4
+                                                               [&_table]:w-full [&_table]:my-4 [&_table]:border-collapse
+                                                               [&_th]:bg-white/10 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:text-white/90 [&_th]:font-medium [&_th]:border [&_th]:border-white/20
+                                                               [&_td]:px-4 [&_td]:py-2 [&_td]:border [&_td]:border-white/10 [&_td]:text-white/70
+                                                               [&_tr:nth-child(even)]:bg-white/5
                                                                text-white/80 leading-relaxed">
                                                         {selectedNode.data.content.ai_response ? (
                                                             <HighlightedMarkdown

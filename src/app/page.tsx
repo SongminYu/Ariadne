@@ -137,6 +137,7 @@ export default function Home() {
   }, [nodes, edges]);
 
   // 流式获取 AI 响应
+  // Direct Gemini API call (works on GitHub Pages without backend)
   const streamAIResponse = async (
     nodeId: string,
     prompt: string,
@@ -144,21 +145,55 @@ export default function Home() {
     anchor?: string
   ) => {
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt,
-          context,
-          anchor: anchor,
-          apiKey: apiKey || undefined, // Send if present
-          model: selectedModel,
-        }),
-      });
+      if (!apiKey) {
+        throw new Error('API Key not configured');
+      }
+
+      // Build the system instruction
+      let systemInstruction = `You are a knowledgeable AI assistant who inspires curiosity.
+
+Your response style:
+1. Clear and accurate, using Markdown format (LaTeX for math supported)
+2. Moderately detailed, but not too long
+3. Naturally introduce 1-2 advanced concepts or terms that the user might not be familiar with, to spark curiosity
+4. Use appropriate headings, lists, and code blocks to organize content
+
+IMPORTANT: Respond in the SAME LANGUAGE as the user's question. If they ask in Chinese, respond in Chinese. If they ask in English, respond in English. Match the user's language exactly.`;
+
+      // If there's context (follow-up scenario)
+      if (context && anchor) {
+        systemInstruction += `
+
+The user is reading a response about a topic. They selected the text "${anchor}" and based on this, asked a new question.
+
+Focus on answering the user's NEW question directly. The selected text is just context/starting point. Do not simply explain the selected text itself.
+
+Previous context (for reference):
+${context}`;
+      }
+
+      // Call Gemini API directly (REST API with streaming)
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:streamGenerateContent?alt=sse&key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2048,
+            },
+          }),
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `API error: ${response.status}`);
       }
 
       const reader = response.body?.getReader();
@@ -168,16 +203,42 @@ export default function Home() {
 
       const decoder = new TextDecoder();
       let accumulatedText = '';
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        accumulatedText += chunk;
+        buffer += decoder.decode(value, { stream: true });
 
-        // 实时更新节点内容
-        updateNodeContent(nodeId, { ai_response: accumulatedText });
+        // Parse SSE events
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              accumulatedText += text;
+              updateNodeContent(nodeId, { ai_response: accumulatedText });
+            } catch {
+              // Skip invalid JSON lines
+            }
+          }
+        }
+      }
+
+      // Process any remaining buffer
+      if (buffer.startsWith('data: ')) {
+        try {
+          const data = JSON.parse(buffer.slice(6));
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          accumulatedText += text;
+          updateNodeContent(nodeId, { ai_response: accumulatedText });
+        } catch {
+          // Skip
+        }
       }
     } catch (error) {
       console.error('AI Error:', error);
