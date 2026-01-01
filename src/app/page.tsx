@@ -38,7 +38,7 @@ export default function Home() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showApiSettings, setShowApiSettings] = useState(false);
   const [apiKey, setApiKey] = useState('');
-  const [selectedModel, setSelectedModel] = useState('gemini-2.0-flash-exp');
+  const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
 
   // Load API key from localStorage on mount
   useEffect(() => {
@@ -166,18 +166,22 @@ export default function Home() {
 ## Response Guidelines
 
 ### Depth & Rigor
-- Provide **comprehensive answers** that fully address the question
-- Include relevant background, context, and foundational concepts when helpful
+- Provide **comprehensive and detailed answers** that fully address the question
+- Include relevant background, context, and foundational concepts
 - Explain the "why" behind facts, not just the "what"
 - When discussing technical topics, include precise definitions and proper terminology
 - For complex topics, break down into clear logical steps or components
+- Aim for substantive responses - don't be overly brief
 
-### Structure & Formatting
-- Use Markdown formatting effectively: headings, lists, bold/italic for emphasis
-- Use LaTeX for mathematical formulas (e.g., $E = mc^2$ or $$\\int_a^b f(x)dx$$)
-- Use code blocks with language specification for code examples
-- Use tables when comparing multiple items or presenting structured data
-- Add clear section headings for longer responses
+### Structure & Formatting (IMPORTANT)
+- **Always use clear Markdown formatting** to organize your response
+- Use **headings** (##, ###) to divide major sections
+- Use **bullet points** (-) or **numbered lists** (1. 2. 3.) to present multiple items clearly
+- Use **bold** for key terms and **italic** for emphasis
+- Use LaTeX for mathematical formulas: inline $E = mc^2$ or block $$\\int_a^b f(x)dx$$
+- Use \`code\` for inline code and fenced code blocks with language for longer code
+- Use **tables** when comparing items or presenting structured data
+- Use **blockquotes** (>) for definitions or important notes
 
 ### Engagement & Curiosity
 - Introduce 1-2 **advanced concepts or interesting connections** that might spark further exploration
