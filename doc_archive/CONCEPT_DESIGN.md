@@ -14,11 +14,9 @@
 
 ### 新功能
 
-- 下载功能：下载html和md文件一起的压缩包
 - 用户可以付费申请一个api key
 - 整个网站ui
 - 改良system prompt，支持用户自己增加system prompt？
-- feedback email
 
 ## 2. 产品设计
 
