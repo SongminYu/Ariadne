@@ -1,6 +1,6 @@
 # Ariadne
 
-> *Follow the thread of thought*
+> *Follow the thread of thought* 
 
 **Ariadne** is an AI-powered canvas for non-linear thinking. It transforms the traditional chat interface into a visual thought map where ideas branch, connect, and evolve naturally.
 
