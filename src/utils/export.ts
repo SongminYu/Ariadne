@@ -2,6 +2,42 @@
 import { Node, Edge } from '@xyflow/react';
 import { NodeData } from '@/stores/useCanvasStore';
 
+/**
+ * Generate a Markdown summary of all Q&A pairs
+ */
+export function generateMarkdownSummary(nodes: Node<NodeData>[], title: string): string {
+    const lines: string[] = [];
+
+    // H1 title
+    lines.push(`# ${title}`);
+    lines.push('');
+
+    // Sort nodes by creation order (we'll use position as a rough proxy, or just iterate)
+    // For each node, add H2 question and answer content
+    for (const node of nodes) {
+        const question = node.data.content.user_prompt;
+        const answer = node.data.content.ai_response || '';
+
+        // H2: Question
+        lines.push(`## ${question}`);
+        lines.push('');
+
+        // If there's a source anchor, show it
+        if (node.data.source_anchor) {
+            lines.push(`> *From: "${node.data.source_anchor.text}"*`);
+            lines.push('');
+        }
+
+        // Answer content
+        lines.push(answer);
+        lines.push('');
+        lines.push('---');
+        lines.push('');
+    }
+
+    return lines.join('\n');
+}
+
 export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): string {
     const nodesJson = JSON.stringify(nodes.map(n => ({
         id: n.id,

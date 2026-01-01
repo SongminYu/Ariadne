@@ -8,7 +8,7 @@ import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
 import { Key, Mail } from 'lucide-react';
-import { generateSingleFileHTML } from '@/utils/htmlExport';
+import { generateSingleFileHTML } from '@/utils/export';
 
 // 动态导入 Canvas 组件以避免 SSR 问题
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
@@ -55,35 +55,46 @@ export default function Home() {
     setShowApiSettings(false);
   }, [apiKey, selectedModel]);
 
-  // Export as single-file HTML
-  const exportAsHtml = useCallback((nodesToExport: typeof nodes, edgesToExport: typeof edges) => {
+  // Export as ZIP (HTML + Markdown)
+  const exportAsZip = useCallback(async (nodesToExport: typeof nodes, edgesToExport: typeof edges) => {
     if (nodesToExport.length === 0) {
       alert('No nodes to export');
       return;
     }
 
     try {
-      const htmlContent = generateSingleFileHTML(nodesToExport, edgesToExport);
+      // Dynamic import JSZip
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
 
-      // Switch to Data URI to force filename in strict browser environments
-      const dataUri = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const baseName = `ariadne-export-${dateStr}`;
+
+      // Generate HTML content (unchanged)
+      const htmlContent = generateSingleFileHTML(nodesToExport, edgesToExport);
+      zip.file(`${baseName}.html`, htmlContent);
+
+      // Generate Markdown summary
+      const { generateMarkdownSummary } = await import('@/utils/export');
+      const mdContent = generateMarkdownSummary(nodesToExport, baseName);
+      zip.file(`${baseName}.md`, mdContent);
+
+      // Generate ZIP and download
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
 
       const link = document.createElement('a');
-      link.href = dataUri;
-      link.setAttribute('download', `ariadne-export-${new Date().toISOString().slice(0, 10)}.html`);
+      link.href = url;
+      link.setAttribute('download', `${baseName}.zip`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
+      URL.revokeObjectURL(url);
       console.log('Export completed with', nodesToExport.length, 'nodes');
     } catch (error) {
       console.error('Export failed:', error);
-      // Fallback for large files
-      if (String(error).includes('URI')) {
-        alert('Export failed: Graph too large for Data URI. Please copy the HTML manually? (Future feature)');
-      } else {
-        alert('Export failed: ' + String(error));
-      }
+      alert('Export failed: ' + String(error));
     }
   }, []);
 
@@ -545,10 +556,10 @@ ${context}`;
 
       {/* Top toolbar */}
       <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
-        {/* Export HTML */}
+        {/* Export ZIP */}
         <button
-          onClick={() => exportAsHtml(nodes, edges)}
-          title="Export as HTML"
+          onClick={() => exportAsZip(nodes, edges)}
+          title="Export as ZIP (HTML + Markdown)"
           className="p-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/10
                      text-white/40 hover:text-white/70 hover:bg-white/10
                      transition-all"
