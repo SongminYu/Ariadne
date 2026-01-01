@@ -276,10 +276,103 @@ export default function Home() {
     }
   };
 
+  // Reusable API Settings Modal
+  const renderApiSettingsModal = () => (
+    <>
+      <div
+        className="fixed inset-0 bg-black/70 z-[100]"
+        onClick={() => setShowApiSettings(false)}
+      />
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                      w-[400px] bg-[#1a1a2e] border border-white/20 rounded-xl
+                      shadow-[0_0_60px_rgba(0,0,0,0.5)] z-[101]
+                      overflow-hidden">
+        <div className="p-5 border-b border-white/10">
+          <h3 className="text-white font-medium flex items-center gap-2">
+            <Key className="w-4 h-4 text-cyan-400" />
+            API Settings
+          </h3>
+        </div>
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="text-xs text-white/50 block mb-2">Company</label>
+            <select
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
+                         text-white text-sm focus:outline-none focus:border-cyan-400/50
+                         [&>option]:bg-[#1a1a2e]"
+              disabled
+            >
+              <option>Google (Gemini)</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-white/50 block mb-2">Model</label>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
+                         text-white text-sm focus:outline-none focus:border-cyan-400/50
+                         [&>option]:bg-[#1a1a2e]"
+            >
+              <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+              <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+              <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-white/50 block mb-2">API Key</label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Enter your API key..."
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
+                         text-white text-sm placeholder:text-white/30
+                         focus:outline-none focus:border-cyan-400/50"
+            />
+          </div>
+        </div>
+        <div className="flex border-t border-white/10">
+          <button
+            onClick={() => setShowApiSettings(false)}
+            className="flex-1 px-4 py-3 text-sm text-white/60 
+                       hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveApiSettings}
+            className="flex-1 px-4 py-3 text-sm text-cyan-400 
+                       hover:bg-cyan-400/10 transition-colors
+                       border-l border-white/10"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </>
+  );
+
   // 如果没有节点，显示初始输入界面
   if (nodes.length === 0) {
+    const hasApiKey = !!apiKey;
+
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a1a] text-white overflow-hidden relative">
+        {/* Settings Button - Top Right */}
+        <button
+          onClick={() => setShowApiSettings(true)}
+          className={`fixed top-4 right-4 p-2.5 rounded-lg z-50
+                     backdrop-blur-md border transition-all
+                     ${hasApiKey
+              ? 'bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:bg-white/10'
+              : 'bg-cyan-500/20 border-cyan-400/50 text-cyan-300 animate-pulse'}`}
+          title={hasApiKey ? "Change API settings" : "Configure API Key"}
+        >
+          <Key className="w-4 h-4" />
+        </button>
+
         {/* 背景网格 */}
         <div
           className="absolute inset-0 opacity-20"
@@ -310,16 +403,24 @@ export default function Home() {
             </div>
           </div>
 
+          {/* API Key Warning */}
+          {!hasApiKey && (
+            <div className="mb-6 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm flex items-center gap-2">
+              <Key className="w-4 h-4" />
+              <span>Please configure your API key first by clicking the key icon above.</span>
+            </div>
+          )}
+
           {/* Input */}
           <div className="w-full relative group">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter your first question..."
-              disabled={isCreatingNode}
+              placeholder={hasApiKey ? "Enter your first question..." : "Configure API key to start..."}
+              disabled={isCreatingNode || !hasApiKey}
               rows={3}
-              className="w-full px-6 py-4 rounded-xl
+              className={`w-full px-6 py-4 rounded-xl
                 bg-white/5 backdrop-blur-md
                 border border-white/10
                 text-white placeholder-white/30
@@ -327,7 +428,8 @@ export default function Home() {
                 transition-all duration-300
                 disabled:opacity-50
                 text-lg resize-none
-                shadow-2xl"
+                shadow-2xl
+                ${!hasApiKey ? 'cursor-not-allowed' : ''}`}
             />
             {isCreatingNode && (
               <div className="absolute right-4 top-4">
@@ -337,7 +439,7 @@ export default function Home() {
             {/* Send button */}
             <button
               onClick={handleCreateRootNode}
-              disabled={isCreatingNode || !inputValue.trim()}
+              disabled={isCreatingNode || !inputValue.trim() || !hasApiKey}
               className="absolute right-4 bottom-4 px-4 py-1.5 rounded-lg
                             bg-cyan-500/20 hover:bg-cyan-500/30
                             text-cyan-300 text-sm
@@ -352,6 +454,9 @@ export default function Home() {
             ⌘/Ctrl + Enter to send
           </p>
         </div>
+
+        {/* API Settings Modal */}
+        {showApiSettings && renderApiSettingsModal()}
       </div>
     );
   }
@@ -425,82 +530,7 @@ export default function Home() {
       />
 
       {/* API Settings Modal */}
-      {showApiSettings && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/70 z-[100]"
-            onClick={() => setShowApiSettings(false)}
-          />
-          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                          w-[400px] bg-[#1a1a2e] border border-white/20 rounded-xl
-                          shadow-[0_0_60px_rgba(0,0,0,0.5)] z-[101]
-                          overflow-hidden">
-            <div className="p-5 border-b border-white/10">
-              <h3 className="text-white font-medium flex items-center gap-2">
-                <Key className="w-4 h-4 text-cyan-400" />
-                API Settings
-              </h3>
-            </div>
-            <div className="p-5 space-y-4">
-              <div>
-                <label className="text-xs text-white/50 block mb-2">Company</label>
-                <select
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                             text-white text-sm focus:outline-none focus:border-cyan-400/50
-                             [&>option]:bg-[#1a1a2e]"
-                  disabled
-                >
-                  <option>Google (Gemini)</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-white/50 block mb-2">Model</label>
-                <select
-                  value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                             text-white text-sm focus:outline-none focus:border-cyan-400/50
-                             [&>option]:bg-[#1a1a2e]"
-                >
-                  <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
-                  <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
-                  <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-white/50 block mb-2">API Key</label>
-                <input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Enter your API key..."
-                  className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                             text-white text-sm placeholder:text-white/30
-                             focus:outline-none focus:border-cyan-400/50"
-                />
-              </div>
-            </div>
-            <div className="flex border-t border-white/10">
-              <button
-                onClick={() => setShowApiSettings(false)}
-                className="flex-1 px-4 py-3 text-sm text-white/60 
-                           hover:bg-white/5 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveApiSettings}
-                className="flex-1 px-4 py-3 text-sm text-cyan-400 
-                           hover:bg-cyan-400/10 transition-colors
-                           border-l border-white/10"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      {showApiSettings && renderApiSettingsModal()}
     </div>
   );
 }
