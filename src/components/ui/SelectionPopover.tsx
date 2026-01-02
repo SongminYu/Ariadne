@@ -113,14 +113,14 @@ export default function SelectionPopover({
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    <div className="bg-[#1a1a2e] backdrop-blur-xl border border-white/20 
-                          rounded-xl shadow-[0_0_40px_rgba(100,200,255,0.2)] 
+                    <div className="bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--card-border)] 
+                          rounded-[var(--radius-md)] shadow-[var(--card-shadow)] 
                           overflow-hidden w-[340px]">
                         {/* Selected text preview */}
-                        <div className="px-4 py-2 border-b border-white/10 bg-white/5">
-                            <p className="text-xs text-white/40 mb-1">Ask about this:</p>
-                            <p className="text-sm text-cyan-300/80 truncate">
-                                "{selectedText}"
+                        <div className="px-4 py-2 border-b border-[var(--card-border)] bg-[var(--bg-primary)]/20">
+                            <p className="text-xs text-[var(--text-tertiary)] mb-1">Ask about this:</p>
+                            <p className="text-sm text-[var(--text-secondary)] truncate italic">
+                                &quot;{selectedText}&quot;
                             </p>
                         </div>
 
@@ -131,24 +131,24 @@ export default function SelectionPopover({
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder="Enter your follow-up question..."
+                                placeholder="Details / Follow-up..."
                                 rows={2}
-                                className="w-full px-3 py-2 rounded-lg
-                                           bg-white/5 border border-white/10
-                                           text-white placeholder-white/30
-                                           focus:outline-none focus:border-cyan-400/50
-                                           text-sm resize-none"
+                                className="w-full bg-[var(--bg-dots)]/50 text-[var(--text-primary)] text-sm 
+                                         placeholder:text-[var(--text-tertiary)]
+                                         rounded-[var(--radius-sm)] px-3 py-2 border border-[var(--card-border)]
+                                         focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]/50
+                                         resize-none"
                             />
                             <div className="flex items-center justify-between mt-2">
-                                <p className="text-xs text-white/20">
+                                <p className="text-xs text-[var(--text-tertiary)]">
                                     ⌘/Ctrl + Enter to send
                                 </p>
                                 <button
                                     onClick={handleSubmit}
                                     disabled={!inputValue.trim() || isLoading}
-                                    className="px-3 py-1 rounded-lg
-                                               bg-cyan-500/20 hover:bg-cyan-500/30
-                                               text-cyan-300 text-xs
+                                    className="px-3 py-1 rounded-[var(--radius-sm)]
+                                               bg-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]/30
+                                               text-[var(--accent-primary)] text-xs font-medium
                                                disabled:opacity-30 disabled:cursor-not-allowed
                                                transition-all"
                                 >

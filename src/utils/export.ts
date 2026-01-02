@@ -39,6 +39,8 @@ export function generateMarkdownSummary(nodes: Node<NodeData>[], title: string):
 }
 
 export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): string {
+    // Only escape </script to prevent breaking the script tag
+    // The data will be stored in a separate JSON script tag
     const nodesJson = JSON.stringify(nodes.map(n => ({
         id: n.id,
         position: n.position,
@@ -50,19 +52,13 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             source_anchor: n.data.source_anchor,
             parent_id: n.data.parent_id
         }
-    })))
-        .replace(/<\/script/g, '<\\/script')
-        .replace(/\u2028/g, '\\u2028')
-        .replace(/\u2029/g, '\\u2029');
+    }))).replace(/<\/script/gi, '<\\/script');
 
     const edgesJson = JSON.stringify(edges.map(e => ({
         id: e.id,
         source: e.source,
         target: e.target
-    })))
-        .replace(/<\/script/g, '<\\/script')
-        .replace(/\u2028/g, '\\u2028')
-        .replace(/\u2029/g, '\\u2029');
+    }))).replace(/<\/script/gi, '<\\/script');
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -70,30 +66,57 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ariadne Export</title>
-    <!-- Geist Font (matches web version) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- KaTeX CSS -->
+    <!-- KaTeX CSS for Math Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <!-- markdown-it with math support -->
+    <!-- Markdown-it and plugins -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath@1.0.0/texmath.min.js"></script>
     <style>
         :root {
-            --bg: #0a0a1a;
-            --card-bg: #1a1a2e;
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.5);
-            --text-dim-40: rgba(255, 255, 255, 0.4);
-            --text-dim-30: rgba(255, 255, 255, 0.3);
-            --accent: #22d3ee;
-            --accent-dim: rgba(34, 211, 238, 0.1);
-            --cyan-300: #67e8f9;
-            --cyan-400: #22d3ee;
-            --red-400: #f87171;
+             /* DAY MODE - "Spring Morning" */
+            --bg-primary: #F2F5F3;
+            --bg-dots: #A4C3B2;
+            --card-bg: #FFFFFF;
+            --card-border: #E1E8E4;
+            --card-shadow: 0 8px 24px rgba(107, 144, 128, 0.08), 0 2px 8px rgba(107, 144, 128, 0.05);
+            --text-primary: #354F52;
+            --text-secondary: #52796F;
+            --text-tertiary: #84A98C;
+            --accent-primary: #6B9080;
+            --accent-secondary: #E07A5F;
+            --accent-tertiary: #8AA399;
+            --edge-color: #CCD5AE;
+            --edge-active: #6B9080;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            
+            /* Typography - System Fonts */
+            --font-serif: system-ui, -apple-system, sans-serif;
+            --font-sans: system-ui, -apple-system, sans-serif;
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+        }
+
+        [data-theme="dark"] {
+             /* NIGHT MODE - "Nature at Night" */
+            --bg-primary: #0F172A;
+            --bg-dots: #334155;
+            --card-bg: #1E293B;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --text-tertiary: #64748B;
+            --accent-primary: #38BDF8;
+            --accent-secondary: #FB7185;
+            --accent-tertiary: #818CF8;
+            --edge-color: #334155;
+            --edge-active: #38BDF8;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -103,14 +126,13 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
         }
         
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
             overflow: hidden;
             width: 100vw;
             height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.5s ease, color 0.3s ease;
         }
 
         /* Container and Canvas */
@@ -119,6 +141,8 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             height: 100%;
             cursor: grab;
             position: relative;
+            background-image: radial-gradient(circle, var(--bg-dots) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
         #container:active { cursor: grabbing; }
         #canvas {
@@ -128,51 +152,74 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             transform-origin: 0 0;
         }
 
+        /* Theme Toggle */
+        #theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            padding: 10px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #theme-toggle:hover {
+            transform: scale(1.1);
+            color: var(--text-primary);
+        }
+
         /* Node Cards */
         .node {
             position: absolute;
             width: 280px;
-            background: rgba(18, 18, 42, 0.9);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(100, 200, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--card-shadow);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
         .node:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(100, 200, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--accent-primary);
         }
         .node-header-anchor {
-            padding: 6px 12px;
-            background: var(--accent-dim);
-            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-            color: rgba(34, 211, 238, 0.7);
-            font-size: 10px;
-            border-radius: 12px 12px 0 0;
+            padding: 8px 16px;
+            background: rgba(14, 165, 233, 0.05); /* slightly transparent accent */
+            border-bottom: 1px solid var(--card-border);
+            color: var(--accent-primary);
+            font-size: 11px;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 500;
         }
         .node-question {
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            background: transparent;
+            border-bottom: 1px solid var(--card-border);
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
+            font-weight: 500;
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .node-question.rounded-top { border-radius: 12px 12px 0 0; }
+        .node-question.rounded-top { border-radius: var(--radius-md) var(--radius-md) 0 0; }
         .node-preview {
-            padding: 10px 16px;
+            padding: 12px 16px;
             font-size: 12px;
-            color: var(--text-dim);
+            color: var(--text-secondary);
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -184,7 +231,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
         #modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
             z-index: 1000;
             display: none;
@@ -198,15 +245,15 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             opacity: 1;
         }
 
-        /* Modal Content - Exact match to DetailModal.tsx */
+        /* Modal Content */
         #modal-content {
             width: 100%;
             max-width: 720px;
             max-height: 85vh;
-            background: #1a1a2e;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -223,8 +270,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             align-items: center;
             justify-content: space-between;
             padding: 16px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--card-border);
         }
         .modal-header-left {
             display: flex;
@@ -235,39 +281,35 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--cyan-400);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            background: var(--accent-primary);
         }
         .modal-title {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: var(--font-serif);
+            font-size: 18px;
         }
         .branch-badge {
-            padding: 2px 8px;
-            background: rgba(34, 211, 238, 0.2);
+            padding: 4px 10px;
+            background: var(--bg-dots);
             border-radius: 9999px;
             font-size: 12px;
-            color: var(--cyan-300);
+            color: var(--text-secondary);
         }
         .close-btn {
             padding: 8px;
             border-radius: 8px;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-tertiary);
             cursor: pointer;
             transition: background 0.2s;
-            font-size: 18px;
-            line-height: 1;
+            font-size: 24px;
+            line-height: 0.8;
         }
         .close-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
+            color: var(--text-primary);
+            background: var(--bg-dots);
         }
 
         /* Modal Body */
@@ -278,214 +320,172 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
 
         /* Source Anchor Section */
         .source-anchor-section {
-            padding: 12px 24px;
-            background: rgba(34, 211, 238, 0.05);
-            border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+            padding: 16px 24px;
+            background: rgba(14, 165, 233, 0.05);
+            border-bottom: 1px solid var(--card-border);
         }
         .source-anchor-label {
-            color: rgba(34, 211, 238, 0.6);
+            color: var(--accent-primary);
             font-size: 12px;
             margin-right: 8px;
+            font-weight: 600;
         }
         .source-anchor-text {
             font-size: 14px;
-            color: rgba(103, 232, 249, 0.8);
+            color: var(--text-secondary);
             font-style: italic;
         }
 
         /* Question Section */
         .question-section {
-            padding: 16px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
+            padding: 24px;
+            border-bottom: 1px solid var(--card-border);
         }
         .section-label {
             font-size: 12px;
-            color: var(--text-dim-40);
+            color: var(--text-tertiary);
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .question-text {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 20px;
+            color: var(--text-primary);
             line-height: 1.5;
-            font-weight: 500;
+            font-family: var(--font-serif);
         }
 
         /* Answer Section */
         .answer-section {
-            padding: 20px 24px;
+            padding: 24px;
         }
 
-        /* Prose styling for markdown content - matches Tailwind prose-invert */
+        /* Prose styling */
         .prose {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.7;
+            color: var(--text-primary);
+            line-height: 1.75;
             font-size: 16px;
+            font-family: var(--font-serif);
         }
-        .prose p { margin: 12px 0; }
-        .prose ul, .prose ol { margin: 12px 0; padding-left: 24px; }
-        .prose li { margin: 8px 0; }
-        .prose strong { color: rgba(255, 255, 255, 0.95); font-weight: 600; }
-        .prose em { font-style: italic; }
+        .prose p {
+            margin-top: 1.25em;
+            margin-bottom: 1.25em;
+            line-height: 1.75;
+        }
+        .prose ul, .prose ol {
+            margin-top: 1.25em;
+            margin-bottom: 1.25em;
+            padding-left: 1.625em;
+        }
+        .prose li {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+        .prose strong { color: var(--text-primary); font-weight: 600; }
         .prose code {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-dots);
             padding: 2px 6px;
             border-radius: 4px;
-            color: var(--cyan-300);
-            font-family: 'SF Mono', Monaco, monospace;
+            color: var(--accent-secondary);
+            font-family: var(--font-geist-mono, monospace);
             font-size: 0.9em;
         }
-        .prose pre {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 16px;
-            overflow-x: auto;
-            margin: 16px 0;
-        }
-        .prose pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-        .prose h1 { font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 24px 0 12px; }
-        .prose h2 { font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 20px 0 10px; }
-        .prose h3 { font-size: 16px; color: rgba(255, 255, 255, 0.8); margin: 16px 0 8px; }
         .prose blockquote {
-            border-left: 3px solid rgba(34, 211, 238, 0.5);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 16px;
-            margin: 16px 0;
+            border-left: 3px solid var(--accent-tertiary);
+            padding-left: 1rem;
+            font-style: italic;
+            color: var(--text-secondary);
         }
-        .prose a { color: var(--cyan-400); text-decoration: none; }
-        .prose a:hover { text-decoration: underline; }
+        .prose a { color: var(--accent-primary); text-decoration: none; }
         
-        /* Table Styles */
+        /* Table styling - matches DetailModal.tsx styling */
         .prose table {
             width: 100%;
-            margin: 16px 0;
             border-collapse: collapse;
+            margin-top: 1.25em;
+            margin-bottom: 1.25em;
+            font-size: 14px;
         }
         .prose th {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 16px;
+            padding: 8px;
             text-align: left;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
         }
         .prose td {
-            padding: 8px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
+            padding: 8px;
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            vertical-align: top;
         }
-        .prose tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.05);
+        
+        /* H2 headings in prose */
+        .prose h2 {
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+            color: var(--text-primary);
+        }
+        .prose h3 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 1.25em;
+            margin-bottom: 0.5em;
+            color: var(--text-primary);
         }
 
         /* Anchor Highlight */
         .anchor-highlight {
-            background: rgba(34, 211, 238, 0.2);
-            color: var(--cyan-300);
-            padding: 0 2px;
-            border-radius: 2px;
-            cursor: pointer;
-            border-bottom: 2px dashed rgba(34, 211, 238, 0.5);
-            transition: background 0.2s;
-        }
-        .anchor-highlight:hover {
-            background: rgba(34, 211, 238, 0.3);
-        }
-
-        /* Selection Hint */
-        .selection-hint {
-            font-size: 12px;
-            color: var(--text-dim-30);
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Explored Links Section */
-        .explored-section {
-            padding: 16px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
-        }
-        .explored-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .explored-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 9999px;
-            background: rgba(34, 211, 238, 0.1);
-            border: 1px solid rgba(34, 211, 238, 0.3);
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--accent-primary);
+            padding: 0 4px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s;
+            font-weight: 500;
         }
-        .explored-chip:hover {
-            background: rgba(34, 211, 238, 0.2);
-            border-color: rgba(34, 211, 238, 0.5);
-        }
-        .explored-chip-text {
-            font-size: 12px;
-            color: var(--cyan-300);
-            font-style: italic;
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .explored-chip-arrow {
-            color: rgba(34, 211, 238, 0.6);
-        }
-        .explored-chip:hover .explored-chip-arrow {
-            color: var(--cyan-400);
+        .anchor-highlight:hover {
+            background: var(--accent-primary);
+            color: white;
         }
 
         /* Modal Footer */
         .modal-footer {
-            padding: 12px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
+            padding: 16px 24px;
+            border-top: 1px solid var(--card-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
         .back-btn {
-            font-size: 12px;
-            color: var(--text-dim-30);
+            font-size: 13px;
+            color: var(--text-secondary);
             background: none;
             border: none;
             cursor: pointer;
             transition: color 0.2s;
         }
         .back-btn:hover {
-            color: var(--cyan-400);
+            color: var(--text-primary);
         }
-        .delete-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: none;
-            border: none;
-            color: rgba(248, 113, 113, 0.7);
-            font-size: 12px;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+        .delete-btn { display: none; }
 
     </style>
 </head>
 <body>
+    <!-- Data stored safely in JSON script tags (not executed as JavaScript) -->
+    <script id="nodes-data" type="application/json">${nodesJson}</script>
+    <script id="edges-data" type="application/json">${edgesJson}</script>
+
+    <button id="theme-toggle" title="Toggle Theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
     <div id="container">
         <div id="canvas">
             <svg id="connections" width="10000" height="10000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;"></svg>
@@ -506,14 +506,56 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             <div class="modal-body" id="modal-body"></div>
             <div class="modal-footer">
                 <button class="back-btn" id="back-btn" style="display:none;">← Back to parent</button>
-                <button class="delete-btn">🗑 Delete</button>
             </div>
         </div>
     </div>
 
     <script>
-        const nodes = ${nodesJson};
-        const edges = ${edgesJson};
+        // Safe storage wrapper to prevent crashes in restricted environments (e.g. file://)
+        const safeStorage = {
+            getItem: (key) => {
+                try { return localStorage.getItem(key); } catch(e) { console.warn('Storage accessed error:', e); return null; }
+            },
+            setItem: (key, value) => {
+                try { localStorage.setItem(key, value); } catch(e) { console.warn('Storage set error:', e); }
+            }
+        };
+
+        // Theme Logic
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+        
+        // Load saved theme or default to light
+        let currentTheme = safeStorage.getItem('ariadne_export_theme') || 'light';
+        setTheme(currentTheme);
+
+        toggleBtn.onclick = () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(currentTheme);
+        };
+
+        function setTheme(theme) {
+            safeStorage.setItem('ariadne_export_theme', theme);
+            if (theme === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+                toggleBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+            } else {
+                root.removeAttribute('data-theme');
+                toggleBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            }
+        }
+        
+        // Load data from JSON script tags (safe from template string issues)
+        let nodes = [];
+        let edges = [];
+        
+        try {
+            nodes = JSON.parse(document.getElementById('nodes-data').textContent);
+            edges = JSON.parse(document.getElementById('edges-data').textContent);
+        } catch(e) {
+            console.error('Data parsing error:', e);
+            document.body.innerHTML += '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border:1px solid red;color:red;">Error loading data: ' + e.message + '</div>';
+        }
 
         const container = document.getElementById('container');
         const canvas = document.getElementById('canvas');
@@ -524,10 +566,15 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
         const branchBadge = document.getElementById('branch-badge');
         const backBtn = document.getElementById('back-btn');
 
-        // Initialize markdown-it with math support
+        // Initialize markdown-it with GFM-like options and math support
         let md;
         try {
-            md = window.markdownit();
+            md = window.markdownit({
+                html: true,        // Enable HTML tags in source
+                linkify: true,     // Autoconvert URL-like text to links
+                typographer: true, // Enable smartquotes and other typographic replacements
+                breaks: true       // Convert newlines in paragraphs into <br>
+            });
             if (window.texmath) {
                 md.use(window.texmath, {
                     engine: window.katex,
@@ -537,7 +584,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             }
         } catch(e) {
             console.error('Markdown init error:', e);
-            md = { render: (t) => t };
+            md = { render: (t) => '<pre>' + t + '</pre>' };
         }
 
         let transform = { x: 0, y: 0, scale: 1 };
@@ -585,29 +632,34 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
         }
 
         // Render Nodes
-        nodes.forEach(node => {
-            const el = document.createElement('div');
-            el.className = 'node';
-            el.style.left = node.position.x + 'px';
-            el.style.top = node.position.y + 'px';
-            
-            let html = '';
-            if (node.data.source_anchor) {
-                html += '<div class="node-header-anchor">↳ "' + escapeHtml(node.data.source_anchor.text) + '"</div>';
-            }
-            const questionClass = node.data.source_anchor ? 'node-question' : 'node-question rounded-top';
-            html += '<div class="' + questionClass + '">' + escapeHtml(node.data.content.user_prompt) + '</div>';
-            let preview = node.data.content.ai_response || '...';
-            if (preview.length > 80) preview = preview.slice(0, 80) + '...';
-            html += '<div class="node-preview">' + escapeHtml(preview) + '</div>';
+        try {
+            nodes.forEach(node => {
+                const el = document.createElement('div');
+                el.className = 'node';
+                el.style.left = node.position.x + 'px';
+                el.style.top = node.position.y + 'px';
+                
+                let html = '';
+                if (node.data.source_anchor) {
+                    html += '<div class="node-header-anchor">↳ "' + escapeHtml(node.data.source_anchor.text) + '"</div>';
+                }
+                const questionClass = node.data.source_anchor ? 'node-question' : 'node-question rounded-top';
+                html += '<div class="' + questionClass + '">' + escapeHtml(node.data.content.user_prompt) + '</div>';
+                let preview = node.data.content.ai_response || '...';
+                if (preview.length > 80) preview = preview.slice(0, 80) + '...';
+                html += '<div class="node-preview">' + escapeHtml(preview) + '</div>';
 
-            el.innerHTML = html;
-            el.onclick = (e) => {
-                if (!isDragging) openModal(node);
-                e.stopPropagation();
-            };
-            nodesContainer.appendChild(el);
-        });
+                el.innerHTML = html;
+                el.onclick = (e) => {
+                    if (!isDragging) openModal(node);
+                    e.stopPropagation();
+                };
+                nodesContainer.appendChild(el);
+            });
+        } catch(e) {
+            console.error('Rendering error:', e);
+            document.body.innerHTML += '<div style="color:red;padding:20px;">Error rendering nodes: ' + e.message + '</div>';
+        }
 
         // Render Edges
         function renderEdges() {
@@ -689,7 +741,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
                 html += '<p class="section-label">🔗 Explored from this answer (' + anchors.length + ')</p>';
                 html += '<div class="explored-chips">';
                 anchors.forEach(a => {
-                    html += '<div class="explored-chip" onclick="navigateToNode(\\'' + a.childId + '\\')" title="' + escapeHtml(a.question) + '">';
+                    html += '<div class="explored-chip" onclick="navigateToNode(' + "'" + a.childId + "'" + ')" title="' + escapeHtml(a.question) + '">';
                     html += '<span class="explored-chip-text">"' + escapeHtml(a.text) + '"</span>';
                     html += '<span class="explored-chip-arrow">→</span>';
                     html += '</div>';

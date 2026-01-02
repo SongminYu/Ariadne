@@ -1,103 +1,186 @@
 @import "tailwindcss";
 
-/* ================================
-   Ariadne Theme System
-   ================================ */
+/* =========================================
+   Ariadne Design System V2: Nature & Freedom
+   ========================================= */
 
-/* Default: Biomimetic Light (Dark Mode) */
+/* Fonts reverted to Geist (System Default) as per user request */
+
 :root {
-  /* Canvas */
-  --canvas-bg: #0a0a1a;
-  --canvas-grid: rgba(100, 200, 255, 0.03);
+  /* DAY MODE - "Spring Morning" (Misty Morandi Green) */
 
-  /* Nodes */
-  --node-bg: rgba(255, 255, 255, 0.05);
-  --node-border: rgba(255, 255, 255, 0.1);
-  --node-glow: rgba(100, 200, 255, 0.15);
-  --node-shadow: 0 0 30px rgba(100, 200, 255, 0.1);
+  /* Core Colors */
+  --bg-primary: #F2F5F3;
+  /* Morning Mist - Very pale cool green */
+  --bg-dots: #A4C3B2;
+  /* Sage Green for dots/accents */
 
-  /* Tendrils (Connections) */
-  --tendril-color: rgba(100, 200, 255, 0.8);
-  --tendril-glow: rgba(100, 200, 255, 0.3);
+  --card-bg: #FFFFFF;
+  --card-border: #E1E8E4;
+  /* Soft Green-Grey border */
+  --card-shadow: 0 8px 24px rgba(107, 144, 128, 0.08), 0 2px 8px rgba(107, 144, 128, 0.05);
 
-  /* Text */
-  --text-primary: #f0f0f0;
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: rgba(255, 255, 255, 0.3);
+  --text-primary: #354F52;
+  /* Deep Jungle Green - Softer than black */
+  --text-secondary: #52796F;
+  /* Medium Sage */
+  --text-tertiary: #84A98C;
+  /* Light Sage */
 
-  /* Accent */
-  --accent-primary: #4a9eff;
-  --accent-glow: rgba(74, 158, 255, 0.4);
+  --accent-primary: #6B9080;
+  /* Morandi Sage Green - Main Action */
+  --accent-secondary: #E07A5F;
+  /* Muted Terra Cotta - Alerts */
+  --accent-tertiary: #8AA399;
+  /* Muted Blue-Green - Secondary Actions */
 
-  /* Legacy support */
-  --background: #0a0a1a;
-  --foreground: #f0f0f0;
+  /* Edge/Connection Colors */
+  --edge-color: #CCD5AE;
+  /* Pale Spring Green */
+  --edge-active: #6B9080;
+  /* Matches accent */
+
+  /* UI Elements */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.4);
+
+  /* Typography */
+  --font-serif: var(--font-geist-sans);
+  /* Reverted to single font family */
+  --font-sans: var(--font-geist-sans);
+
+  /* Shape */
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 8px;
 }
 
-/* Theme: Sophisticated Paper (Light Mode) */
-:root[data-theme="sophisticated-paper"] {
-  --canvas-bg: #f8f5f0;
-  --canvas-grid: rgba(0, 0, 0, 0.03);
+[data-theme="dark"] {
+  /* NIGHT MODE - "Nature at Night" (Deep Starlight Blue) */
 
-  --node-bg: #ffffff;
-  --node-border: rgba(0, 0, 0, 0.08);
-  --node-glow: none;
-  --node-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  /* Core Colors */
+  --bg-primary: #0F172A;
+  /* Deep Slate - Night Sky */
+  --bg-dots: #334155;
+  /* Slate 700 */
 
-  --tendril-color: #555555;
-  --tendril-glow: none;
+  --card-bg: #1E293B;
+  /* Slate 800 */
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
-  --text-primary: #1a1a1a;
-  --text-secondary: rgba(0, 0, 0, 0.6);
-  --text-muted: rgba(0, 0, 0, 0.3);
+  --text-primary: #E2E8F0;
+  /* Slate 200 */
+  --text-secondary: #94A3B8;
+  /* Slate 400 */
+  --text-tertiary: #64748B;
+  /* Slate 500 */
 
-  --accent-primary: #2563eb;
-  --accent-glow: rgba(37, 99, 235, 0.2);
+  --accent-primary: #38BDF8;
+  /* Sky Blue - Starlight */
+  --accent-secondary: #FB7185;
+  /* Rose */
+  --accent-tertiary: #818CF8;
+  /* Indigo */
 
-  --background: #f8f5f0;
-  --foreground: #1a1a1a;
+  /* Edge/Connection Colors */
+  --edge-color: #334155;
+  --edge-active: #38BDF8;
+
+  /* UI Elements */
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: background-color 0.5s ease, color 0.3s ease;
   overflow: hidden;
-  /* Prevent body scroll */
+  /* Canvas controls scroll */
 }
 
-/* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Base Typography overrides */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+/* Custom Utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+.card-elevation {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--card-border);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
-/* KaTeX Alignment Fixes */
-.katex-display {
-  text-align: left !important;
-  margin: 1em 0;
-  padding-left: 1em;
-  overflow-x: auto;
-  overflow-y: hidden;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-.katex {
-  font-size: 1.1em;
+/* Markdown Content Styling */
+.prose-content {
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  /* Reading mode uses serif */
+  line-height: 1.8;
 }
 
-.katex-error {
-  color: #ef4444;
+.prose-content h1,
+.prose-content h2 {
+  color: var(--text-primary);
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
+}
+
+.prose-content p {
+  margin-bottom: 1.2em;
+  font-size: 1.05rem;
+}
+
+.prose-content strong {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.prose-content blockquote {
+  border-left: 3px solid var(--accent-tertiary);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.prose-content code {
+  font-family: var(--font-geist-mono);
+  background: var(--bg-dots);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
 }

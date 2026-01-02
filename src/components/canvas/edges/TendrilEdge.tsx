@@ -31,17 +31,17 @@ export default function TendrilEdge({
 
 
     return (
-        <>
+        <g style={style}>
             {/* Glow effect layer */}
             <motion.path
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
+                animate={{ pathLength: 1, opacity: 0.3 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 d={edgePath}
                 fill="none"
-                stroke="rgba(100, 200, 255, 0.3)"
-                strokeWidth={8}
-                filter="blur(4px)"
+                stroke="var(--accent-primary)"
+                strokeWidth={6}
+                style={{ filter: 'blur(4px)' }}
             />
 
             {/* Main line */}
@@ -51,25 +51,28 @@ export default function TendrilEdge({
                 transition={{ duration: 0.6, ease: 'easeOut' }}
                 d={edgePath}
                 fill="none"
-                stroke="rgba(100, 200, 255, 0.8)"
+                stroke="var(--accent-primary)"
                 strokeWidth={2}
                 strokeLinecap="round"
                 markerEnd={markerEnd}
             />
 
-            {/* 能量流动动画点 */}
-            {/* Energy flow animation dot - Using native SVG animation to avoid React/Framer prop issues */}
+            {/* Energy flow animation dot */}
             <circle
                 r={3}
-                fill="rgba(150, 220, 255, 1)"
-                filter="drop-shadow(0 0 4px rgba(100, 200, 255, 0.8))"
+                fill="var(--bg-primary)"
+                stroke="var(--accent-primary)"
+                strokeWidth={2}
             >
                 <animateMotion
-                    dur="2s"
+                    dur="3s"
                     repeatCount="indefinite"
                     path={edgePath}
+                    keyPoints="0;1"
+                    keyTimes="0;1"
+                    calcMode="linear"
                 />
             </circle>
-        </>
+        </g>
     );
 }

@@ -75,9 +75,9 @@ function highlightAnchorsInText(
         result.push(
             <span
                 key={`anchor-${i}`}
-                className="bg-cyan-400/20 text-cyan-300 px-0.5 rounded cursor-pointer 
-                           border-b-2 border-dashed border-cyan-400/50
-                           hover:bg-cyan-400/30 transition-colors"
+                className="bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] px-1 rounded cursor-pointer 
+                           border-b border-dashed border-[var(--accent-primary)]/50
+                           hover:bg-[var(--accent-primary)]/30 transition-colors font-medium"
                 onClick={(e) => {
                     e.stopPropagation();
                     onAnchorClick(match.anchor.childId);
@@ -308,27 +308,27 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                                         transition={{ duration: 0.2, ease: "easeInOut" }}
-                                        className="w-full max-w-[720px] max-h-[85vh] bg-[#1a1a2e] 
-                                         border border-white/10 rounded-2xl 
-                                         shadow-2xl z-50
+                                        className="w-full max-w-[720px] max-h-[85vh] bg-[var(--card-bg)] 
+                                         border border-[var(--card-border)] rounded-[var(--radius-lg)] 
+                                         shadow-[var(--card-shadow)] z-50
                                          flex flex-col overflow-hidden outline-none pointer-events-auto"
                                     >
                                         {/* Header */}
-                                        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+                                        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--card-border)] bg-[var(--card-bg)]">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                                                <Dialog.Title className="text-white/90 font-medium">
+                                                <div className="w-2 h-2 rounded-full bg-[var(--accent-primary)]" />
+                                                <Dialog.Title className="text-[var(--text-primary)] font-serif font-medium text-lg">
                                                     Details
                                                 </Dialog.Title>
                                                 {anchors.length > 0 && (
-                                                    <span className="px-2 py-0.5 bg-cyan-400/20 rounded-full text-xs text-cyan-300">
+                                                    <span className="px-2 py-0.5 bg-[var(--bg-dots)] rounded-full text-xs text-[var(--text-secondary)]">
                                                         {anchors.length} branches
                                                     </span>
                                                 )}
                                             </div>
                                             <Dialog.Close asChild>
-                                                <button className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-                                                    <X className="w-4 h-4 text-white/40" />
+                                                <button className="p-2 rounded-lg hover:bg-[var(--bg-dots)] transition-colors">
+                                                    <X className="w-5 h-5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]" />
                                                 </button>
                                             </Dialog.Close>
                                         </div>
@@ -338,41 +338,43 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                             <div className="flex-1 overflow-y-auto custom-scrollbar">
                                                 {/* Source anchor */}
                                                 {selectedNode.data.source_anchor && (
-                                                    <div className="px-6 py-3 bg-cyan-400/5 border-b border-cyan-400/10">
-                                                        <span className="text-cyan-400/60 text-xs mr-2">↳ From:</span>
-                                                        <span className="text-sm text-cyan-300/80 italic">
-                                                            "{selectedNode.data.source_anchor.text}"
+                                                    <div className="px-6 py-4 bg-[var(--accent-primary)]/5 border-b border-[var(--card-border)]">
+                                                        <span className="text-[var(--accent-primary)] font-medium text-xs mr-2">↳ From:</span>
+                                                        <span className="text-sm text-[var(--text-secondary)] italic">
+                                                            &quot;{selectedNode.data.source_anchor.text}&quot;
                                                         </span>
                                                     </div>
                                                 )}
 
                                                 {/* Question */}
-                                                <div className="px-6 py-4 border-b border-white/5 bg-white/[0.02]">
-                                                    <p className="text-xs text-white/40 mb-2 font-medium">💭 Question</p>
-                                                    <p className="text-lg text-white/90 leading-relaxed font-medium">
+                                                <div className="px-6 py-6 border-b border-[var(--card-border)] bg-[var(--bg-primary)]/30">
+                                                    <p className="text-xs text-[var(--text-tertiary)] mb-2 font-semibold uppercase tracking-wider">Question</p>
+                                                    <p className="text-xl text-[var(--text-primary)] leading-relaxed font-serif font-medium">
                                                         {selectedNode.data.content.user_prompt}
                                                     </p>
                                                 </div>
 
                                                 {/* AI Answer - text selectable */}
                                                 <div
-                                                    className="px-6 py-5 select-text cursor-text"
+                                                    className="px-6 py-6 select-text cursor-text"
                                                     onMouseUp={handleTextSelect}
                                                 >
-                                                    <p className="text-xs text-white/40 mb-4 font-medium">✨ Answer</p>
-                                                    <div className="prose prose-invert prose-base max-w-none
-                                                               [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3
-                                                               [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-cyan-300
-                                                               [&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base
-                                                               [&_h1]:text-white/90 [&_h2]:text-white/90 [&_h3]:text-white/80
-                                                               [&_a]:text-cyan-400 [&_a]:no-underline hover:[&_a]:underline
-                                                               [&_blockquote]:border-l-cyan-400/50 [&_blockquote]:bg-white/5 [&_blockquote]:px-4 [&_blockquote]:py-2
-                                                               [&_pre]:bg-white/5 [&_pre]:rounded-lg [&_pre]:p-4
-                                                               [&_table]:w-full [&_table]:my-4 [&_table]:border-collapse
-                                                               [&_th]:bg-white/10 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:text-white/90 [&_th]:font-medium [&_th]:border [&_th]:border-white/20
-                                                               [&_td]:px-4 [&_td]:py-2 [&_td]:border [&_td]:border-white/10 [&_td]:text-white/70
-                                                               [&_tr:nth-child(even)]:bg-white/5
-                                                               text-white/80 leading-relaxed">
+                                                    <div className="prose prose-base max-w-none font-serif
+                                                               [&_p]:text-[var(--text-primary)] [&_p]:leading-loose
+                                                               [&_h1]:text-[var(--text-primary)] [&_h2]:text-[var(--text-primary)] [&_h3]:text-[var(--text-primary)]
+                                                               [&_strong]:text-[var(--text-primary)] [&_strong]:font-bold
+                                                               [&_code]:bg-[var(--bg-dots)] [&_code]:text-[var(--accent-secondary)] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5
+                                                               [&_pre]:bg-[var(--bg-primary)] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-lg
+                                                               [&_blockquote]:border-l-[var(--accent-tertiary)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--text-secondary)]
+                                                               [&_a]:text-[var(--accent-primary)] hover:[&_a]:underline
+                                                               [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-[var(--text-primary)]
+                                                               [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-[var(--text-primary)]
+                                                               [&_li]:my-1
+                                                               [&_table]:w-full [&_table]:border-collapse
+                                                               [&_th]:border [&_th]:border-[var(--card-border)] [&_th]:p-2 [&_th]:text-[var(--text-primary)]
+                                                               [&_td]:border [&_td]:border-[var(--card-border)] [&_td]:p-2 [&_td]:text-[var(--text-secondary)]
+                                                               "
+                                                    >
                                                         {selectedNode.data.content.ai_response ? (
                                                             <HighlightedMarkdown
                                                                 content={selectedNode.data.content.ai_response}
@@ -380,18 +382,18 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                                                 onAnchorClick={handleAnchorClick}
                                                             />
                                                         ) : (
-                                                            <div className="flex items-center gap-2 text-white/40 py-4">
-                                                                <span className="inline-block w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                                                                <span className="inline-block w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
-                                                                <span className="inline-block w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
-                                                                <span className="ml-2">Loading...</span>
+                                                            <div className="flex items-center gap-2 text-[var(--text-tertiary)] py-4">
+                                                                <span className="inline-block w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" />
+                                                                <span className="inline-block w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                                                                <span className="inline-block w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                                                                <span className="ml-2">Thinking...</span>
                                                             </div>
                                                         )}
                                                     </div>
 
                                                     {/* Selection hint */}
                                                     {selectedNode.data.content.ai_response && (
-                                                        <p className="text-xs text-white/30 mt-6 pt-4 border-t border-white/5">
+                                                        <p className="text-xs text-[var(--text-tertiary)] mt-8 pt-4 border-t border-[var(--card-border)]">
                                                             💡 Select any text to ask a follow-up question
                                                         </p>
                                                     )}
@@ -399,9 +401,9 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
 
                                                 {/* Anchor Bubbles - show explored branches as chips */}
                                                 {anchors.length > 0 && (
-                                                    <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02]">
-                                                        <p className="text-xs text-white/40 mb-3 font-medium">
-                                                            🔗 Explored from this answer ({anchors.length})
+                                                    <div className="px-6 py-4 border-t border-[var(--card-border)] bg-[var(--bg-primary)]/20">
+                                                        <p className="text-xs text-[var(--text-tertiary)] mb-3 font-semibold uppercase tracking-wider">
+                                                            Explored Links ({anchors.length})
                                                         </p>
                                                         <div className="flex flex-wrap gap-2">
                                                             {anchors.map((anchor) => (
@@ -409,15 +411,15 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                                                     key={anchor.childId}
                                                                     onClick={() => setSelectedNodeForSheet(anchor.childId)}
                                                                     className="inline-flex items-center gap-2 px-3 py-2 rounded-full
-                                                                           bg-cyan-400/10 hover:bg-cyan-400/20
-                                                                           border border-cyan-400/30 hover:border-cyan-400/50
+                                                                           bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20
+                                                                           border border-[var(--accent-primary)]/20 hover:border-[var(--accent-primary)]/40
                                                                            transition-all group cursor-pointer"
                                                                     title={anchor.question}
                                                                 >
-                                                                    <span className="text-xs text-cyan-300 italic max-w-[150px] truncate">
-                                                                        "{anchor.text}"
+                                                                    <span className="text-xs text-[var(--text-secondary)] italic max-w-[150px] truncate">
+                                                                        &quot;{anchor.text}&quot;
                                                                     </span>
-                                                                    <span className="text-cyan-400/60 group-hover:text-cyan-400">→</span>
+                                                                    <span className="text-[var(--accent-primary)]/60 group-hover:text-[var(--accent-primary)]">→</span>
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -428,13 +430,13 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
 
                                         {/* Footer */}
                                         {selectedNode && (
-                                            <div className="px-6 py-3 border-t border-white/5 bg-white/[0.02]">
+                                            <div className="px-6 py-4 border-t border-[var(--card-border)] bg-[var(--card-bg)]">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         {selectedNode.data.parent_id && (
                                                             <button
                                                                 onClick={() => setSelectedNodeForSheet(selectedNode.data.parent_id)}
-                                                                className="text-xs text-white/30 hover:text-cyan-400 transition-colors"
+                                                                className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                                                             >
                                                                 ← Back to parent
                                                             </button>
@@ -443,8 +445,8 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                                     <button
                                                         onClick={handleDeleteClick}
                                                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                                                               text-red-400/70 hover:text-red-400
-                                                               hover:bg-red-500/10
+                                                               text-[var(--accent-secondary)]/80 hover:text-[var(--accent-secondary)]
+                                                               hover:bg-[var(--accent-secondary)]/10
                                                                text-xs transition-all"
                                                     >
                                                         <Trash2 className="w-3 h-3" />
@@ -489,36 +491,36 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                                       w-[340px] bg-[#1a1a2e] border border-white/20 rounded-xl
-                                       shadow-[0_0_60px_rgba(0,0,0,0.5)] z-[10000]
+                                       w-[340px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[var(--radius-lg)]
+                                       shadow-[var(--card-shadow)] z-[10000]
                                        overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-5">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-red-500/20 rounded-lg">
-                                        <Trash2 className="w-5 h-5 text-red-400" />
+                            <div className="p-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 bg-[var(--accent-secondary)]/10 rounded-full">
+                                        <Trash2 className="w-5 h-5 text-[var(--accent-secondary)]" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium mb-1">Delete Node</h3>
-                                        <p className="text-sm text-white/60">This will delete this node and all child nodes. This cannot be undone.</p>
+                                        <h3 className="text-[var(--text-primary)] font-medium mb-1">Delete Node</h3>
+                                        <p className="text-sm text-[var(--text-secondary)] leading-relaxed">This will delete this node and all child nodes. This cannot be undone.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex border-t border-white/10">
+                            <div className="flex border-t border-[var(--card-border)] bg-[var(--bg-dots)]">
                                 <button
                                     onClick={handleCancelDelete}
-                                    className="flex-1 px-4 py-3 text-sm text-white/60 
-                                               hover:bg-white/5 transition-colors"
+                                    className="flex-1 px-4 py-3 text-sm text-[var(--text-secondary)] 
+                                               hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleConfirmDelete}
-                                    className="flex-1 px-4 py-3 text-sm text-red-400 
-                                               hover:bg-red-500/10 transition-colors
-                                               border-l border-white/10"
+                                    className="flex-1 px-4 py-3 text-sm text-[var(--accent-secondary)] 
+                                               hover:bg-[var(--card-bg)] transition-colors
+                                               border-l border-[var(--card-border)] font-medium"
                                 >
                                     Delete
                                 </button>

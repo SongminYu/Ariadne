@@ -7,16 +7,19 @@ import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
-import { Bot, Mail } from 'lucide-react';
+import { Bot, Mail, Sun, Moon } from 'lucide-react';
+import { useThemeStore } from '@/stores/useThemeStore';
 import { generateSingleFileHTML } from '@/utils/export';
 import { API_KEY } from '@/config/apiConfig';
+import ThemeBackground from '@/components/ui/ThemeBackground';
+import InteractionDemo from '@/components/ui/InteractionDemo';
 
 // Dynamically import Canvas component to avoid SSR issues
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-screen bg-[#0a0a1a] flex items-center justify-center">
-      <div className="text-white/50 animate-pulse">Loading Canvas...</div>
+    <div className="w-full h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+      <div className="text-[var(--text-tertiary)] animate-pulse">Loading Canvas...</div>
     </div>
   ),
 });
@@ -39,6 +42,17 @@ export default function Home() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
+  const { theme, toggleTheme } = useThemeStore();
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Load model preference from localStorage on mount
   useEffect(() => {
@@ -158,39 +172,39 @@ export default function Home() {
       // Build the system instruction
       let systemInstruction = `You are a knowledgeable AI assistant who provides thorough, well-researched responses that inspire deeper understanding.
 
-## Response Guidelines
+    ## Response Guidelines
 
-### Depth & Rigor
-- Provide **comprehensive and detailed answers** that fully address the question
-- Include relevant background, context, and foundational concepts
-- Explain the "why" behind facts, not just the "what"
-- When discussing technical topics, include precise definitions and proper terminology
-- For complex topics, break down into clear logical steps or components
-- Aim for substantive responses - don't be overly brief
+    ### Depth & Rigor
+    - Provide **comprehensive and detailed answers** that fully address the question
+    - Include relevant background, context, and foundational concepts
+    - Explain the "why" behind facts, not just the "what"
+    - When discussing technical topics, include precise definitions and proper terminology
+    - For complex topics, break down into clear logical steps or components
+    - Aim for substantive responses - don't be overly brief
 
-### Structure & Formatting (IMPORTANT)
-- **Always use clear Markdown formatting** to organize your response
-- Use **headings** (##, ###) to divide major sections
-- Use **bullet points** (-) or **numbered lists** (1. 2. 3.) to present multiple items clearly
-- Use **bold** for key terms and **italic** for emphasis
-- **IMPORTANT**: Add spaces around bold text for reliable rendering (e.g., "告诉我们 **事实** 。")
-- **DO NOT** use bold on quoted text (e.g., use "Hello" not **"Hello"** or "**Hello**")
-- Use LaTeX for mathematical formulas: inline $E = mc^2$ or block $$\\int_a^b f(x)dx$$
-- Use \`code\` for inline code and fenced code blocks with language for longer code
-- Use **tables** when comparing items or presenting structured data
-- Use **blockquotes** (>) for definitions or important notes
-- **DO NOT** use horizontal rules (---) to separate sections
+    ### Structure & Formatting (IMPORTANT)
+    - **Always use clear Markdown formatting** to organize your response
+    - Use **headings** (##, ###) to divide major sections
+    - Use **bullet points** (-) or **numbered lists** (1. 2. 3.) to present multiple items clearly
+    - Use **bold** for key terms and **italic** for emphasis
+    - **IMPORTANT**: Add spaces around bold text for reliable rendering (e.g., "告诉我们 **事实** 。")
+    - **DO NOT** use bold on quoted text (e.g., use "Hello" not **"Hello"** or "**Hello**")
+    - Use LaTeX for mathematical formulas: inline $E = mc^2$ or block $$\\int_a^b f(x)dx$$
+    - Use \`code\` for inline code and fenced code blocks with language for longer code
+    - Use **tables** when comparing items or presenting structured data
+    - Use **blockquotes** (>) for definitions or important notes
+    - **NEVER** use horizontal rules (---) to separate sections
 
-### Engagement & Curiosity
-- Introduce 1-2 **advanced concepts or interesting connections** that might spark further exploration
-- Mention related topics the user might want to explore next
-- When appropriate, acknowledge nuances, debates, or alternative perspectives
+    ### Engagement & Curiosity
+    - Introduce 1-2 **advanced concepts or interesting connections** that might spark further exploration
+    - Mention related topics the user might want to explore next
+    - When appropriate, acknowledge nuances, debates, or alternative perspectives
 
-### Language
-- **CRITICAL**: Respond in the SAME LANGUAGE as the user's question
-- If they ask in Chinese, respond entirely in Chinese
-- If they ask in English, respond entirely in English
-- Match the user's language exactly throughout your response`;
+    ### Language
+    - **CRITICAL**: Respond in the SAME LANGUAGE as the user's question
+    - If they ask in Chinese, respond entirely in Chinese
+    - If they ask in English, respond entirely in English
+    - Match the user's language exactly throughout your response`;
 
       // If there's context (follow-up scenario)
       if (context && anchor) {
@@ -373,60 +387,59 @@ ${context}`;
   const renderModelSettingsModal = () => (
     <>
       <div
-        className="fixed inset-0 bg-black/70 z-[100]"
+        className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm"
         onClick={() => setShowModelSettings(false)}
       />
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                      w-[400px] bg-[#1a1a2e] border border-white/20 rounded-xl
-                      shadow-[0_0_60px_rgba(0,0,0,0.5)] z-[101]
-                      overflow-hidden">
-        <div className="p-5 border-b border-white/10">
-          <h3 className="text-white font-medium flex items-center gap-2">
-            <Bot className="w-4 h-4 text-cyan-400" />
+                      w-[400px] card-elevation rounded-[var(--radius-lg)]
+                      z-[101] overflow-hidden transition-all">
+        <div className="p-6 border-b border-[var(--card-border)]">
+          <h3 className="text-[var(--text-primary)] font-serif text-xl flex items-center gap-2">
+            <Bot className="w-5 h-5 text-[var(--accent-primary)]" />
             Model Settings
           </h3>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-6 space-y-6">
           <div>
-            <label className="text-xs text-white/50 block mb-2">Company</label>
-            <select
-              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                         text-white text-sm focus:outline-none focus:border-cyan-400/50
-                         [&>option]:bg-[#1a1a2e]"
-              disabled
-            >
-              <option>Google (Gemini)</option>
-            </select>
+            <label className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold block mb-2">Company</label>
+            <div className="w-full px-4 py-3 rounded-[var(--radius-sm)] bg-[var(--bg-dots)] border border-[var(--card-border)]
+                          text-[var(--text-primary)] text-sm opacity-70 cursor-not-allowed">
+              Google (Gemini)
+            </div>
           </div>
           <div>
-            <label className="text-xs text-white/50 block mb-2">Model</label>
-            <select
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                         text-white text-sm focus:outline-none focus:border-cyan-400/50
-                         [&>option]:bg-[#1a1a2e]"
-            >
-              <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
-              <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
-              <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-            </select>
+            <label className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold block mb-2">Model</label>
+            <div className="relative">
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="w-full px-4 py-3 rounded-[var(--radius-sm)] bg-[var(--bg-primary)] border border-[var(--card-border)]
+                           text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--accent-primary)]
+                           appearance-none cursor-pointer hover:border-[var(--accent-primary)] transition-colors"
+              >
+                <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+                <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="flex border-t border-white/10">
+        <div className="flex border-t border-[var(--card-border)] p-2 bg-[var(--bg-dots)]">
           <button
             onClick={() => setShowModelSettings(false)}
-            className="flex-1 px-4 py-3 text-sm text-white/60 
-                       hover:bg-white/5 transition-colors"
+            className="flex-1 px-4 py-2 text-sm text-[var(--text-secondary)] 
+                       hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] rounded-[var(--radius-sm)] transition-all"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveModelSettings}
-            className="flex-1 px-4 py-3 text-sm text-cyan-400 
-                       hover:bg-cyan-400/10 transition-colors
-                       border-l border-white/10"
+            className="flex-1 px-4 py-2 text-sm text-white bg-[var(--accent-primary)] 
+                       hover:opacity-90 transition-opacity rounded-[var(--radius-sm)] shadow-md"
           >
             Save
           </button>
@@ -438,101 +451,124 @@ ${context}`;
   // If no nodes, show initial input screen
   if (nodes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a1a] text-white overflow-hidden relative">
-        {/* Settings Button - Top Right */}
-        <button
-          onClick={() => setShowModelSettings(true)}
-          className="fixed top-4 right-4 p-2.5 rounded-lg z-50
-                     backdrop-blur-md border transition-all
-                     bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:bg-white/10"
-          title="Model Settings"
-        >
-          <Bot className="w-4 h-4" />
-        </button>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden relative transition-colors duration-500">
 
-        {/* Feedback Button - Bottom Left */}
+        {/* Top Right Controls Group */}
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-3 rounded-full glass-panel text-[var(--text-secondary)] hover:text-[var(--text-primary)] 
+                       hover:scale-110 transition-all duration-300 shadow-sm"
+            title={theme === 'light' ? "Switch to Night Mode" : "Switch to Day Mode"}
+          >
+            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </button>
+
+          {/* Settings Button */}
+          <button
+            onClick={() => setShowModelSettings(true)}
+            className="p-3 rounded-full glass-panel text-[var(--text-secondary)] hover:text-[var(--text-primary)] 
+                       hover:scale-110 transition-all duration-300 shadow-sm"
+            title="Model Settings"
+          >
+            <Bot className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Feedback Button - Bottom Right */}
         <a
           href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
-          className="fixed bottom-4 right-4 p-2.5 rounded-lg z-50
-                     bg-white/5 backdrop-blur-md border border-white/10
-                     text-white/40 hover:text-white/70 hover:bg-white/10
-                     transition-all flex items-center gap-2"
+          className="fixed bottom-6 right-6 px-4 py-2 rounded-full z-50
+                     glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
+                     transition-all flex items-center gap-2 hover:shadow-md text-sm font-medium"
           title="Send Feedback"
         >
           <Mail className="w-4 h-4" />
-          <span className="text-xs">Feedback</span>
+          <span>Feedback</span>
         </a>
 
-        {/* Background grid */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'radial-gradient(circle, rgba(100,200,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '30px 30px',
-          }}
-        />
+        {/* Background Decorative Elements */}
+        {theme === 'light' ? (
+          /* Day Mode: Subtle Clouds/Gradient */
+          <div className="absolute inset-0 opacity-40 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(107, 144, 128, 0.08), transparent 50%), radial-gradient(circle at 70% 80%, rgba(14, 165, 233, 0.06), transparent 40%)'
+            }}
+          />
+        ) : (
+          /* Night Mode: Deep Glow */
+          <div className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.1), transparent 50%), radial-gradient(circle at 70% 80%, rgba(129, 140, 248, 0.08), transparent 40%)'
+            }}
+          />
+        )}
 
-        {/* Decorative glow */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[120px]" />
-        </div>
+        {/* Two-Column Layout Container */}
+        <div className="z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20 w-full max-w-6xl px-6 py-12">
 
-        {/* Content Container (z-10 to stay above background) */}
-        <div className="z-10 flex flex-col items-center w-full max-w-2xl px-4">
-          <h1 className="text-4xl font-thin tracking-wider mb-2 font-geist-mono">Ariadne</h1>
-          <p className="text-white/40 mb-12 font-light">Follow the thread of thought</p>
+          {/* Left Column: Interactive Demo */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center">
+            <InteractionDemo theme={theme} />
+          </div>
 
-          {/* Golden Sentences from CONCEPT_DESIGN */}
-          <div className="text-center mb-10 space-y-3">
-            <p className="text-xl text-white/80 font-light italic">
-              "Thinking isn't linear. Why should your chat be?"
+          {/* Right Column: Branding & Input */}
+          <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start">
+            {/* Logo & Tagline */}
+            <h1 className="text-5xl md:text-7xl tracking-tight mb-3 font-serif text-[var(--text-primary)] drop-shadow-sm">
+              Ariadne
+            </h1>
+            <p className="text-[var(--text-secondary)] mb-8 font-light text-lg tracking-wide">
+              Follow the thread of thought
             </p>
-            <div className="flex items-center gap-2 text-white/40 text-sm justify-center bg-white/5 px-4 py-2 rounded-full border border-white/5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              Select any text in an answer to ask a follow-up question.
+
+            {/* Slogan */}
+            <p className="text-xl md:text-2xl text-[var(--text-primary)] font-serif italic opacity-90 leading-relaxed mb-10 text-center lg:text-left">
+              &ldquo;Thinking isn&apos;t linear. Why should your chat be?&rdquo;
+            </p>
+
+            {/* Input */}
+            <div className="w-full relative group">
+              <textarea
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="What's on your mind?"
+                disabled={isCreatingNode}
+                rows={1}
+                style={{ minHeight: '72px' }}
+                className="w-full px-6 py-5 rounded-[var(--radius-lg)]
+                  bg-[var(--card-bg)]
+                  border border-[var(--card-border)]
+                  text-[var(--text-primary)] placeholder-[var(--text-muted)]
+                  text-lg resize-none
+                  shadow-[var(--card-shadow)]
+                  focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 focus:border-[var(--accent-primary)]
+                  transition-all duration-300"
+              />
+              {isCreatingNode && (
+                <div className="absolute right-5 top-1/2 -translate-y-1/2">
+                  <div className="w-5 h-5 border-2 border-[var(--accent-primary)]/30 border-t-[var(--accent-primary)] rounded-full animate-spin" />
+                </div>
+              )}
+              {!isCreatingNode && inputValue.trim() && (
+                <button
+                  onClick={handleCreateRootNode}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 px-5 py-2 rounded-full
+                                bg-[var(--accent-primary)] hover:opacity-90 text-white
+                                text-sm font-medium shadow-lg hover:shadow-xl
+                                transition-all"
+                >
+                  Send
+                </button>
+              )}
             </div>
-          </div>
 
-          {/* Input */}
-          <div className="w-full relative group">
-            <textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter your first question..."
-              disabled={isCreatingNode}
-              rows={3}
-              className="w-full px-6 py-4 rounded-xl
-                bg-white/5 backdrop-blur-md
-                border border-white/10
-                text-white placeholder-white/30
-                focus:outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20
-                transition-all duration-300
-                disabled:opacity-50
-                text-lg resize-none
-                shadow-2xl"
-            />
-            {isCreatingNode && (
-              <div className="absolute right-4 top-4">
-                <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
-              </div>
-            )}
-            <button
-              onClick={handleCreateRootNode}
-              disabled={isCreatingNode || !inputValue.trim()}
-              className="absolute right-4 bottom-4 px-4 py-1.5 rounded-lg
-                            bg-cyan-500/20 hover:bg-cyan-500/30
-                            text-cyan-300 text-sm
-                            disabled:opacity-30 disabled:cursor-not-allowed
-                            transition-all"
-            >
-              Send
-            </button>
+            <p className="text-[var(--text-tertiary)] text-xs mt-4 opacity-60">
+              ⌘/Ctrl + Enter to send
+            </p>
           </div>
-
-          <p className="text-white/20 text-xs mt-6">
-            ⌘/Ctrl + Enter to send
-          </p>
         </div>
 
         {/* Model Settings Modal */}
@@ -543,24 +579,37 @@ ${context}`;
 
   // Show canvas when nodes exist
   return (
-    <div className="w-full h-screen bg-[#0a0a1a]">
+    <div className="w-full h-screen bg-[var(--bg-primary)] transition-colors duration-500 overflow-hidden relative">
+      <ThemeBackground />
+      <div className="absolute inset-0 opacity-40 mix-blend-multiply pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(circle, var(--bg-dots) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
       <Canvas />
 
       {/* Detail modal (floating centered) */}
       <DetailModal onFollowUp={handleFollowUp} />
 
-      {/* Top toolbar */}
-      <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
+      {/* Top toolbar - Integrated Capsule */}
+      <div className="fixed top-6 right-6 z-50 flex items-center p-1.5 rounded-full glass-panel shadow-sm">
+
+        {/* Theme Toggle (Integrated) */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
+          title={theme === 'light' ? "Switch to Night Mode" : "Switch to Day Mode"}
+        >
+          {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </button>
+
+        <div className="w-px h-4 bg-[var(--text-muted)] mx-1 opacity-30"></div>
+
         {/* Export ZIP */}
         <button
           onClick={() => exportAsZip(nodes, edges)}
-          title="Export as ZIP (HTML + Markdown)"
-          className="p-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/10
-                     text-white/40 hover:text-white/70 hover:bg-white/10
-                     transition-all"
+          title="Export as ZIP"
+          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
         </button>
@@ -568,13 +617,11 @@ ${context}`;
         {/* Reset */}
         <button
           onClick={() => setShowResetConfirm(true)}
-          title="Reset"
-          className="p-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/10
-                     text-white/40 hover:text-white/70 hover:bg-white/10
-                     transition-all"
+          title="Reset Canvas"
+          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--accent-secondary)] hover:bg-[var(--card-bg)] transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </button>
@@ -583,31 +630,27 @@ ${context}`;
         <button
           onClick={() => setShowModelSettings(true)}
           title="Model Settings"
-          className="p-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/10
-                     text-white/40 hover:text-white/70 hover:bg-white/10
-                     transition-all"
+          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
         >
           <Bot className="w-4 h-4" />
         </button>
 
         {/* Save status */}
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/5 backdrop-blur-md border border-white/10">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs text-white/60">Saved</span>
+        <div className="flex items-center gap-2 pl-3 pr-2 border-l border-[var(--text-muted)] border-opacity-20 ml-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
         </div>
       </div>
 
       {/* Feedback Button - Bottom Left */}
       <a
         href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
-        className="fixed bottom-4 right-4 p-2.5 rounded-lg z-50
-                   bg-white/5 backdrop-blur-md border border-white/10
-                   text-white/40 hover:text-white/70 hover:bg-white/10
-                   transition-all flex items-center gap-2"
+        className="fixed bottom-6 right-6 px-3 py-1.5 rounded-full z-50
+                   glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
+                   transition-all flex items-center gap-2 text-xs opacity-50 hover:opacity-100"
         title="Send Feedback"
       >
-        <Mail className="w-4 h-4" />
-        <span className="text-xs">Feedback</span>
+        <Mail className="w-3 h-3" />
+        <span>Feedback</span>
       </a>
 
       {/* Reset confirm dialog */}

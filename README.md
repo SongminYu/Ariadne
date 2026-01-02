@@ -38,3 +38,4 @@ This design is built on a practical insight: in any coherent inquiry, the starti
 ---
 
 *Built with Next.js, React Flow, and modern AI APIs.*
+

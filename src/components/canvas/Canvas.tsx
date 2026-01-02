@@ -142,10 +142,14 @@ function CanvasInner() {
                     variant={BackgroundVariant.Dots}
                     gap={24}
                     size={1}
-                    color="rgba(100, 200, 255, 0.08)"
+                    color="var(--bg-dots)"
+                    className="opacity-50"
                 />
                 <Controls
-                    className="!bg-[#2e2e3e]/40 !border-white/10 !rounded-lg !shadow-lg backdrop-blur-md [&>button]:!border-white/10 [&>button]:!bg-transparent hover:[&>button]:!bg-white/10 [&>button>svg]:!fill-white/80"
+                    className="glass-panel !border-[var(--glass-border)] !rounded-[var(--radius-sm)] !shadow-lg 
+                               [&>button]:!border-[var(--glass-border)] [&>button]:!bg-transparent 
+                               hover:[&>button]:!bg-[var(--card-bg)] [&>button]:!transition-colors
+                               [&>button>svg]:!fill-[var(--text-secondary)]"
                     showZoom={true}
                     showFitView={true}
                     showInteractive={false}
