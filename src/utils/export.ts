@@ -537,6 +537,54 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             color: var(--text-primary);
         }
         .delete-btn { display: none; }
+        /* Selection Hint */
+        .selection-hint {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        /* Explored Links Section */
+        .explored-section {
+            padding: 16px 24px;
+            border-top: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.02);
+        }
+        [data-theme="dark"] .explored-section {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .explored-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .explored-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 9999px;
+            background: rgba(107, 144, 128, 0.1);
+            border: 1px solid rgba(107, 144, 128, 0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .explored-chip:hover {
+            background: rgba(107, 144, 128, 0.2);
+            border-color: rgba(107, 144, 128, 0.4);
+        }
+        .explored-chip-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        .explored-chip-arrow {
+            font-size: 14px;
+            color: var(--accent-primary);
+        }
 
     </style>
 </head>
@@ -797,6 +845,9 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             answerHtml = highlightAnchors(answerHtml, anchors);
             html += answerHtml;
             html += '</div>';
+            
+            // Selection hint (like web app)
+            html += '<p class="selection-hint">💡 Select any text to ask a follow-up question</p>';
             html += '</div>';
 
             // Explored Links

@@ -453,6 +453,15 @@ ${context}`;
     return (
       <div className="flex items-center justify-center min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden relative transition-colors duration-500">
 
+        {/* Logo - top left corner */}
+        <div className="fixed top-6 left-6 z-50">
+          <img
+            src={theme === 'dark' ? '/icon-dark.jpg' : '/icon-light.jpg'}
+            alt="Ariadne"
+            className="w-10 h-10 rounded-lg shadow-md transition-all duration-300"
+          />
+        </div>
+
         {/* Top Right Controls Group */}
         <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
           {/* Theme Toggle */}
@@ -581,6 +590,16 @@ ${context}`;
   return (
     <div className="w-full h-screen bg-[var(--bg-primary)] transition-colors duration-500 overflow-hidden relative">
       <ThemeBackground />
+
+      {/* Logo - top left corner */}
+      <div className="fixed top-4 left-4 z-50">
+        <img
+          src={theme === 'dark' ? '/icon-dark.jpg' : '/icon-light.jpg'}
+          alt="Ariadne"
+          className="w-10 h-10 rounded-lg shadow-md transition-all duration-300"
+        />
+      </div>
+
       <Canvas />
 
       {/* Detail modal (floating centered) */}
