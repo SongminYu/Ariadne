@@ -129,7 +129,7 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
                         style={{ color: 'var(--text-secondary)' }}
                     >
                         <p>
-                            Entropy is a measure of disorder in a system. In thermodynamics, it determines the direction of spontaneous and{' '}
+                            Entropy represents the quantitative measure of disorder or randomness. In the context of thermodynamics, it determines the direction of spontaneous and{' '}
                             <span className="relative whitespace-nowrap inline-block align-bottom">
                                 {/* Background & Cursor Layer */}
                                 <span
