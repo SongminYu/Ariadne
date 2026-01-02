@@ -37,7 +37,6 @@ This design is built on a practical insight: in any coherent inquiry, the starti
 
 ## Features under Discussion
 
-- Context awareness across branches for LLM to generate answers.
 - Possibility to add root nodes.
 
 ---

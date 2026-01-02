@@ -45,6 +45,8 @@ export default function Home() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
+  const [customSystemPrompt, setCustomSystemPrompt] = useState('');
+  const [showSystemPromptInput, setShowSystemPromptInput] = useState(false);
   const { theme, toggleTheme } = useThemeStore();
 
   // Apply theme to document
@@ -61,13 +63,17 @@ export default function Home() {
   useEffect(() => {
     const savedModel = localStorage.getItem('ariadne_model');
     if (savedModel) setSelectedModel(savedModel);
+
+    const savedPrompt = localStorage.getItem('ariadne_custom_system_prompt');
+    if (savedPrompt) setCustomSystemPrompt(savedPrompt);
   }, []);
 
   // Save model preference to localStorage
   const handleSaveModelSettings = useCallback(() => {
     localStorage.setItem('ariadne_model', selectedModel);
+    localStorage.setItem('ariadne_custom_system_prompt', customSystemPrompt);
     setShowModelSettings(false);
-  }, [selectedModel]);
+  }, [selectedModel, customSystemPrompt]);
 
   // Handle .ariadne project file upload
   const handleProjectFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,6 +262,34 @@ export default function Home() {
     - If they ask in English, respond entirely in English
     - Match the user's language exactly throughout your response`;
 
+      // Inject custom system prompt if available
+      if (customSystemPrompt && customSystemPrompt.trim()) {
+        systemInstruction += `
+
+    ## User Custom Instructions
+    The user has provided specific instructions for you to follow. These instructions override default behaviors where applicable:
+
+    ${customSystemPrompt}`;
+      }
+
+      // Inject project context (history from other nodes)
+      if (nodes.length > 0) {
+        systemInstruction += `
+
+    ## Project Context (Knowledge Base from other nodes)
+    The following is the conversation history of the current project. Use this to find connections.
+    If the user's new question relates to any information in the above Project Context, you MUST consider it in your answer and explicitly mention the connection to the user.
+
+    `;
+        nodes.forEach((node, index) => {
+          const q = node.data.content.user_prompt || '';
+          const a = node.data.content.ai_response || '';
+          if (q.trim() || a.trim()) {
+            systemInstruction += `Node ${index + 1} (${node.id}):\nUser Question: ${q}\nAI Answer: ${a}\n\n`;
+          }
+        });
+      }
+
       // If there's context (follow-up scenario)
       if (context && anchor) {
         systemInstruction += `
@@ -397,7 +431,7 @@ ${context}`;
     streamAIResponse(nodeId, prompt, context, anchorText);
 
     return nodeId;
-  }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, selectedModel]);
+  }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, selectedModel, customSystemPrompt]);
 
   // Handle root node creation
   const handleCreateRootNode = async () => {
@@ -440,9 +474,10 @@ ${context}`;
         className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm"
         onClick={() => setShowModelSettings(false)}
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                      w-[400px] card-elevation rounded-[var(--radius-lg)]
-                      z-[101] overflow-hidden transition-all">
+      <div className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                      ${showSystemPromptInput ? 'w-[600px]' : 'w-[400px]'} 
+                      card-elevation rounded-[var(--radius-lg)]
+                      z-[101] overflow-hidden transition-all duration-300 ease-in-out`}>
         <div className="p-6 border-b border-[var(--card-border)]">
           <h3 className="text-[var(--text-primary)] font-serif text-xl flex items-center gap-2">
             <Bot className="w-5 h-5 text-[var(--accent-primary)]" />
@@ -458,7 +493,16 @@ ${context}`;
             </div>
           </div>
           <div>
-            <label className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold block mb-2">Model</label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold">Model</label>
+              <button
+                onClick={() => setShowSystemPromptInput(!showSystemPromptInput)}
+                className="text-xs text-[var(--accent-primary)] hover:underline cursor-pointer font-medium transition-colors"
+                title={showSystemPromptInput ? "Hide prompt editor" : "Edit custom system instructions"}
+              >
+                {showSystemPromptInput ? 'Hide System Prompt' : 'Edit System Prompt'}
+              </button>
+            </div>
             <div className="relative">
               <select
                 value={selectedModel}
@@ -475,6 +519,25 @@ ${context}`;
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </div>
+            </div>
+
+            {/* Custom System Prompt Editor */}
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out
+                           ${showSystemPromptInput ? 'max-h-[300px] mt-4 opacity-100' : 'max-h-0 mt-0 opacity-0'}`}>
+              <label className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold block mb-2">
+                Custom System Instructions
+              </label>
+              <textarea
+                value={customSystemPrompt}
+                onChange={(e) => setCustomSystemPrompt(e.target.value)}
+                className="w-full h-48 px-4 py-3 rounded-[var(--radius-sm)] bg-[var(--bg-primary)] border border-[var(--card-border)]
+                           text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--accent-primary)]
+                           resize-none transition-colors overflow-y-auto"
+                placeholder="Enter custom instructions for the AI behavior..."
+              />
+              <p className="text-xs text-[var(--text-tertiary)] mt-2">
+                These instructions will be prepended to the system prompt.
+              </p>
             </div>
           </div>
         </div>
