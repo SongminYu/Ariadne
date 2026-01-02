@@ -21,7 +21,7 @@ import StarNode from './nodes/StarNode';
 import TendrilEdge from './edges/TendrilEdge';
 import { Node } from '@xyflow/react';
 
-// 注册自定义节点和边类型
+// Register custom node and edge types
 const nodeTypes = {
     compact: CompactNode,
     star: StarNode,
@@ -31,10 +31,10 @@ const edgeTypes = {
     tendril: TendrilEdge,
 };
 
-// LOD 阈值：只有极端缩放时切换到 Star 视图
+// LOD threshold: switch to Star view only at extreme zoom levels
 const STAR_THRESHOLD = 0.25;
 
-// 根据 zoom 获取节点类型
+// Get node type based on zoom level
 function getNodeTypeForZoom(zoom: number): string {
     return zoom < STAR_THRESHOLD ? 'star' : 'compact';
 }
@@ -55,27 +55,27 @@ function CanvasInner() {
 
     const { getZoom } = useReactFlow();
 
-    // 点击画布背景清除路径高亮
+    // Clear highlighted path when clicking on canvas background
     const handlePaneClick = useCallback(() => {
         if (highlightedPath) {
             setHighlightedPath(null);
         }
     }, [highlightedPath, setHighlightedPath]);
 
-    // 根据 zoom 更新节点类型
+    // Update node types based on zoom and apply highlight styles
     const nodesWithLOD = useMemo(() => {
         const nodeType = getNodeTypeForZoom(currentZoom);
         return nodes.map(node => ({
             ...node,
             type: nodeType,
-            // 添加高亮状态
+            // Add highlight state
             style: highlightedPath && !highlightedPath.has(node.id)
                 ? { opacity: 0.3, filter: 'blur(1px)' }
                 : undefined,
         }));
     }, [nodes, currentZoom, highlightedPath]);
 
-    // 边的样式（根据高亮路径）
+    // Apply styles to edges based on highlighted path
     const edgesWithStyle = useMemo(() => {
         return edges.map(edge => ({
             ...edge,
@@ -85,7 +85,7 @@ function CanvasInner() {
         }));
     }, [edges, highlightedPath]);
 
-    // 同步 Store 变化到本地状态
+    // Sync Store changes to local state
     useEffect(() => {
         setNodes(storeNodes);
     }, [storeNodes, setNodes]);
@@ -94,11 +94,11 @@ function CanvasInner() {
         setEdges(storeEdges);
     }, [storeEdges, setEdges]);
 
-    // 处理节点变化（包括拖拽位置更新）
+    // Handle node changes (including drag position updates)
     const handleNodesChange: OnNodesChange = useCallback((changes: NodeChange[]) => {
         onNodesChange(changes);
 
-        // 同步位置变化到 Store
+        // Sync position changes to Store
         changes.forEach((change) => {
             if (change.type === 'position' && change.position && !change.dragging) {
                 updateNodePosition(change.id, change.position);
@@ -106,7 +106,7 @@ function CanvasInner() {
         });
     }, [onNodesChange, updateNodePosition]);
 
-    // 监听视口变化
+    // Listen for viewport changes
     const handleMove = useCallback(() => {
         const zoom = getZoom();
         setCurrentZoom(zoom);
@@ -156,7 +156,7 @@ function CanvasInner() {
     );
 }
 
-// 包装组件以提供 ReactFlowProvider
+// Wrap component to provide ReactFlowProvider
 export default function Canvas() {
     return (
         <ReactFlowProvider>

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Node, Edge } from '@xyflow/react';
 
-// 节点数据结构
+// Node data structure
 export interface NodeContent {
     user_prompt: string;
     ai_response: string;
@@ -22,7 +22,7 @@ export interface NodeData {
     };
 }
 
-// 选中的锚点（包含位置信息用于弹窗）
+// Selected anchor (includes position info for popup)
 export interface SelectedAnchor {
     nodeId: string;
     text: string;
@@ -30,13 +30,13 @@ export interface SelectedAnchor {
     position?: { x: number; y: number };
 }
 
-// Store 状态定义
+// Store state definition
 interface CanvasState {
-    // 节点和边
+    // Nodes and Edges
     nodes: Node<NodeData>[];
     edges: Edge[];
 
-    // 交互状态
+    // Interaction state
     selectedAnchor: SelectedAnchor | null;
     selectedNodeIdForSheet: string | null;
     highlightedPath: Set<string> | null;
@@ -61,7 +61,7 @@ interface CanvasState {
 export const useCanvasStore = create<CanvasState>()(
     persist(
         (set, get) => ({
-            // 初始状态
+            // Initial state
             nodes: [],
             edges: [],
             selectedAnchor: null,
@@ -115,10 +115,10 @@ export const useCanvasStore = create<CanvasState>()(
             setHighlightedPath: (path) =>
                 set({ highlightedPath: path }),
 
-            // 删除节点及其所有后代
+            // Delete node and all its descendants
             deleteNode: (nodeId) =>
                 set((state) => {
-                    // 收集要删除的所有节点 ID（包括后代）
+                    // Collect all node IDs to delete (including descendants)
                     const toDelete = new Set<string>();
                     const collectDescendants = (id: string) => {
                         toDelete.add(id);
@@ -156,7 +156,7 @@ export const useCanvasStore = create<CanvasState>()(
                 nodes: state.nodes,
                 edges: state.edges,
             }),
-            // 加载时清理孤立边（连接到不存在节点的边）
+            // Clean up orphan edges on rehydrate (edges connected to non-existent nodes)
             onRehydrateStorage: () => (state) => {
                 if (state) {
                     const nodeIds = new Set(state.nodes.map(n => n.id));

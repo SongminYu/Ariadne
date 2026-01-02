@@ -10,8 +10,8 @@ interface StarNodeProps extends NodeProps {
 }
 
 /**
- * StarNode - 极度缩小视图时显示的光点节点
- * 只显示一个发光的圆点，悬停时显示问题摘要
+ * StarNode - Light point node shown at extreme zoom out
+ * Only shows a glowing dot, displaying question summary on hover
  */
 export default function StarNode({ data, id }: StarNodeProps) {
     const { content, parent_id } = data;
@@ -30,14 +30,14 @@ export default function StarNode({ data, id }: StarNodeProps) {
             onClick={() => setSelectedNodeForSheet(id)}
             className="relative cursor-pointer"
         >
-            {/* 连接点 - 输入 */}
+            {/* Connection handle - input */}
             <Handle
                 type="target"
                 position={Position.Left}
                 className="!w-1 !h-1 !bg-cyan-400/50 !border-0"
             />
 
-            {/* 发光核心 */}
+            {/* Glowing core */}
             <div
                 className={`
                     w-4 h-4 rounded-full
@@ -53,7 +53,7 @@ export default function StarNode({ data, id }: StarNodeProps) {
                 }}
             />
 
-            {/* 悬停提示 */}
+            {/* Hover tooltip */}
             {isHovered && (
                 <motion.div
                     initial={{ opacity: 0, y: 5 }}
@@ -72,7 +72,7 @@ export default function StarNode({ data, id }: StarNodeProps) {
                 </motion.div>
             )}
 
-            {/* 连接点 - 输出 */}
+            {/* Connection handle - output */}
             <Handle
                 type="source"
                 position={Position.Right}

@@ -24,17 +24,17 @@ export default function SelectionPopover({
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // 打开时聚焦输入框
+    // Focus input when opened
     useEffect(() => {
         if (isOpen && inputRef.current) {
-            // 延迟聚焦，确保元素已渲染
+            // Delay focus to ensure element is rendered
             setTimeout(() => {
                 inputRef.current?.focus();
             }, 100);
         }
     }, [isOpen]);
 
-    // 点击外部关闭
+    // Close when clicking outside
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -43,7 +43,7 @@ export default function SelectionPopover({
         };
 
         if (isOpen) {
-            // 延迟添加事件监听，避免立即触发
+            // Delay adding event listener to avoid immediate trigger
             setTimeout(() => {
                 document.addEventListener('mousedown', handleClickOutside);
             }, 100);
@@ -68,7 +68,7 @@ export default function SelectionPopover({
         }
     };
 
-    // 计算位置，确保不超出屏幕
+    // Calculate position to ensure it stays within screen
     const getAdjustedPosition = () => {
         const popoverWidth = 340;
         const popoverHeight = 180;
@@ -77,15 +77,15 @@ export default function SelectionPopover({
         let x = position.x - popoverWidth / 2;
         let y = position.y + 10;
 
-        // 防止超出右边界
+        // Prevent exceeding right boundary
         if (x + popoverWidth > window.innerWidth - padding) {
             x = window.innerWidth - popoverWidth - padding;
         }
-        // 防止超出左边界
+        // Prevent exceeding left boundary
         if (x < padding) {
             x = padding;
         }
-        // 防止超出底部
+        // Prevent exceeding bottom boundary
         if (y + popoverHeight > window.innerHeight - padding) {
             y = position.y - popoverHeight - 10;
         }

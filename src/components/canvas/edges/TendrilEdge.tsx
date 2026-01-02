@@ -14,9 +14,9 @@ export default function TendrilEdge({
     style = {},
     markerEnd,
 }: EdgeProps) {
-    // 计算贝塞尔曲线路径，添加重力效果
+    // Calculate Bezier curve path
     const midY = (sourceY + targetY) / 2;
-    const gravity = Math.min(50, Math.abs(targetX - sourceX) * 0.2); // 重力效果
+    const gravity = Math.min(50, Math.abs(targetX - sourceX) * 0.2); // Gravity effect
 
     const [edgePath] = getBezierPath({
         sourceX,
@@ -32,7 +32,7 @@ export default function TendrilEdge({
 
     return (
         <>
-            {/* 发光效果层 */}
+            {/* Glow effect layer */}
             <motion.path
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
@@ -44,7 +44,7 @@ export default function TendrilEdge({
                 filter="blur(4px)"
             />
 
-            {/* 主线条 */}
+            {/* Main line */}
             <motion.path
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
@@ -58,7 +58,7 @@ export default function TendrilEdge({
             />
 
             {/* 能量流动动画点 */}
-            {/* 能量流动动画点 - Using native SVG animation to avoid React/Framer prop issues */}
+            {/* Energy flow animation dot - Using native SVG animation to avoid React/Framer prop issues */}
             <circle
                 r={3}
                 fill="rgba(150, 220, 255, 1)"

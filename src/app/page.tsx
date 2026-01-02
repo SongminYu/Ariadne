@@ -10,7 +10,7 @@ import { Node } from '@xyflow/react';
 import { Key, Mail } from 'lucide-react';
 import { generateSingleFileHTML } from '@/utils/export';
 
-// 动态导入 Canvas 组件以避免 SSR 问题
+// Dynamically import Canvas component to avoid SSR issues
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
   ssr: false,
   loading: () => (
@@ -98,7 +98,7 @@ export default function Home() {
     }
   }, []);
 
-  // 计算新节点位置（带碰撞检测）
+  // Calculate new node position (with collision detection)
   const calculateNewPosition = useCallback((parentId: string | null) => {
     if (!parentId) {
       return { x: 0, y: 0 };
@@ -109,35 +109,35 @@ export default function Home() {
       return { x: 0, y: 0 };
     }
 
-    // 节点尺寸常量
+    // Node size constants
     const NODE_WIDTH = 400;
     const NODE_HEIGHT = 200;
     const HORIZONTAL_GAP = 150;
     const VERTICAL_GAP = 50;
 
-    // 新节点基础位置：父节点右侧
+    // New node base position: right of parent node
     const baseX = parentNode.position.x + NODE_WIDTH + HORIZONTAL_GAP;
 
-    // 获取同一列（相似X位置）的所有节点
+    // Get all nodes in the same column (similar X position)
     const nodesInColumn = nodes.filter(n =>
       Math.abs(n.position.x - baseX) < NODE_WIDTH / 2
     );
 
-    // 计算该父节点已有的子节点
+    // Calculate existing children of this parent
     const siblingEdges = edges.filter(e => e.source === parentId);
     const siblingCount = siblingEdges.length;
 
-    // 基础Y位置：以父节点为中心，根据兄弟数量偏移
+    // Base Y position: centered on parent, offset by sibling count
     let baseY = parentNode.position.y + (siblingCount * (NODE_HEIGHT + VERTICAL_GAP));
 
-    // 碰撞检测：检查是否与现有节点重叠
+    // Collision detection: check for overlap with existing nodes
     const isColliding = (y: number) => {
       return nodesInColumn.some(n =>
         Math.abs(n.position.y - y) < NODE_HEIGHT + VERTICAL_GAP
       );
     };
 
-    // 如果有碰撞，向下寻找空位
+    // If colliding, search downwards for empty space
     let attempts = 0;
     while (isColliding(baseY) && attempts < 20) {
       baseY += NODE_HEIGHT + VERTICAL_GAP;
@@ -147,7 +147,7 @@ export default function Home() {
     return { x: baseX, y: baseY };
   }, [nodes, edges]);
 
-  // 流式获取 AI 响应
+  // Stream AI response
   // Direct Gemini API call (works on GitHub Pages without backend)
   const streamAIResponse = async (
     nodeId: string,
@@ -284,7 +284,7 @@ ${context}`;
     }
   };
 
-  // 创建节点
+  // Create node
   const createNode = useCallback(async (
     prompt: string,
     parentId: string | null = null,
@@ -293,7 +293,7 @@ ${context}`;
     const nodeId = crypto.randomUUID();
     const position = calculateNewPosition(parentId);
 
-    // 创建节点
+    // Create node object
     const newNode: Node<NodeData> = {
       id: nodeId,
       type: 'compact',
@@ -314,7 +314,7 @@ ${context}`;
 
     addNode(newNode);
 
-    // 如果有父节点，创建连线
+    // If parent exists, create edge
     if (parentId) {
       addEdge({
         id: `edge-${parentId}-${nodeId}`,
@@ -324,7 +324,7 @@ ${context}`;
       });
     }
 
-    // 获取上下文信息
+    // Get context information
     let context: string | undefined;
     if (parentId && anchorText) {
       const parentNode = nodes.find(n => n.id === parentId);
@@ -333,13 +333,13 @@ ${context}`;
       }
     }
 
-    // 触发流式 AI 请求
+    // Trigger streaming AI request
     streamAIResponse(nodeId, prompt, context, anchorText);
 
     return nodeId;
   }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, apiKey, selectedModel]);
 
-  // 处理根节点创建
+  // Handle root node creation
   const handleCreateRootNode = async () => {
     if (!inputValue.trim() || isCreatingNode) return;
 
@@ -349,7 +349,7 @@ ${context}`;
     setIsCreatingNode(false);
   };
 
-  // 处理追问（子节点创建）
+  // Handle follow-up (create child node)
   const handleFollowUp = async (question: string) => {
     if (!selectedAnchor) return;
 
@@ -361,12 +361,12 @@ ${context}`;
 
     setSelectedAnchor(null);
 
-    // 自动打开新节点的详情弹窗，等待 AI 响应
+    // Automatically open detail modal for new node, waiting for AI response
     setSelectedNodeForSheet(newNodeId);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Cmd+Enter (Mac) 或 Ctrl+Enter (Windows) 发送
+    // Cmd+Enter (Mac) or Ctrl+Enter (Windows) to send
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleCreateRootNode();
@@ -451,7 +451,7 @@ ${context}`;
     </>
   );
 
-  // 如果没有节点，显示初始输入界面
+  // If no nodes, show initial input screen
   if (nodes.length === 0) {
     const hasApiKey = !!apiKey;
 
@@ -483,7 +483,7 @@ ${context}`;
           <span className="text-xs">Feedback</span>
         </a>
 
-        {/* 背景网格 */}
+        {/* Background grid */}
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -492,7 +492,7 @@ ${context}`;
           }}
         />
 
-        {/* 装饰光晕 */}
+        {/* Decorative glow */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[120px]" />
         </div>
@@ -571,12 +571,12 @@ ${context}`;
     );
   }
 
-  // 有节点时显示画布
+  // Show canvas when nodes exist
   return (
     <div className="w-full h-screen bg-[#0a0a1a]">
       <Canvas />
 
-      {/* 详情弹窗（居中浮动） */}
+      {/* Detail modal (floating centered) */}
       <DetailModal onFollowUp={handleFollowUp} />
 
       {/* Top toolbar */}
