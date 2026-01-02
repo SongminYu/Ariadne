@@ -7,8 +7,9 @@ import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
-import { Key, Mail } from 'lucide-react';
+import { Bot, Mail } from 'lucide-react';
 import { generateSingleFileHTML } from '@/utils/export';
+import { API_KEY } from '@/config/apiConfig';
 
 // Dynamically import Canvas component to avoid SSR issues
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
@@ -36,24 +37,20 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [isCreatingNode, setIsCreatingNode] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [showApiSettings, setShowApiSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const [showModelSettings, setShowModelSettings] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
 
-  // Load API key from localStorage on mount
+  // Load model preference from localStorage on mount
   useEffect(() => {
-    const savedKey = localStorage.getItem('ariadne_api_key');
     const savedModel = localStorage.getItem('ariadne_model');
-    if (savedKey) setApiKey(savedKey);
     if (savedModel) setSelectedModel(savedModel);
   }, []);
 
-  // Save API key to localStorage
-  const handleSaveApiSettings = useCallback(() => {
-    localStorage.setItem('ariadne_api_key', apiKey);
+  // Save model preference to localStorage
+  const handleSaveModelSettings = useCallback(() => {
     localStorage.setItem('ariadne_model', selectedModel);
-    setShowApiSettings(false);
-  }, [apiKey, selectedModel]);
+    setShowModelSettings(false);
+  }, [selectedModel]);
 
   // Export as ZIP (HTML + Markdown)
   const exportAsZip = useCallback(async (nodesToExport: typeof nodes, edgesToExport: typeof edges) => {
@@ -156,9 +153,7 @@ export default function Home() {
     anchor?: string
   ) => {
     try {
-      if (!apiKey) {
-        throw new Error('API Key not configured');
-      }
+      // Using built-in API key from config
 
       // Build the system instruction
       let systemInstruction = `You are a knowledgeable AI assistant who provides thorough, well-researched responses that inspire deeper understanding.
@@ -210,7 +205,7 @@ ${context}`;
 
       // Call Gemini API directly (REST API with streaming)
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:streamGenerateContent?alt=sse&key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:streamGenerateContent?alt=sse&key=${API_KEY}`,
         {
           method: 'POST',
           headers: {
@@ -337,7 +332,7 @@ ${context}`;
     streamAIResponse(nodeId, prompt, context, anchorText);
 
     return nodeId;
-  }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, apiKey, selectedModel]);
+  }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, selectedModel]);
 
   // Handle root node creation
   const handleCreateRootNode = async () => {
@@ -373,12 +368,12 @@ ${context}`;
     }
   };
 
-  // Reusable API Settings Modal
-  const renderApiSettingsModal = () => (
+  // Reusable Model Settings Modal
+  const renderModelSettingsModal = () => (
     <>
       <div
         className="fixed inset-0 bg-black/70 z-[100]"
-        onClick={() => setShowApiSettings(false)}
+        onClick={() => setShowModelSettings(false)}
       />
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
                       w-[400px] bg-[#1a1a2e] border border-white/20 rounded-xl
@@ -386,8 +381,8 @@ ${context}`;
                       overflow-hidden">
         <div className="p-5 border-b border-white/10">
           <h3 className="text-white font-medium flex items-center gap-2">
-            <Key className="w-4 h-4 text-cyan-400" />
-            API Settings
+            <Bot className="w-4 h-4 text-cyan-400" />
+            Model Settings
           </h3>
         </div>
         <div className="p-5 space-y-4">
@@ -417,29 +412,17 @@ ${context}`;
               <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
             </select>
           </div>
-          <div>
-            <label className="text-xs text-white/50 block mb-2">API Key</label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Enter your API key..."
-              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10
-                         text-white text-sm placeholder:text-white/30
-                         focus:outline-none focus:border-cyan-400/50"
-            />
-          </div>
         </div>
         <div className="flex border-t border-white/10">
           <button
-            onClick={() => setShowApiSettings(false)}
+            onClick={() => setShowModelSettings(false)}
             className="flex-1 px-4 py-3 text-sm text-white/60 
                        hover:bg-white/5 transition-colors"
           >
             Cancel
           </button>
           <button
-            onClick={handleSaveApiSettings}
+            onClick={handleSaveModelSettings}
             className="flex-1 px-4 py-3 text-sm text-cyan-400 
                        hover:bg-cyan-400/10 transition-colors
                        border-l border-white/10"
@@ -453,21 +436,17 @@ ${context}`;
 
   // If no nodes, show initial input screen
   if (nodes.length === 0) {
-    const hasApiKey = !!apiKey;
-
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-[#0a0a1a] text-white overflow-hidden relative">
         {/* Settings Button - Top Right */}
         <button
-          onClick={() => setShowApiSettings(true)}
-          className={`fixed top-4 right-4 p-2.5 rounded-lg z-50
+          onClick={() => setShowModelSettings(true)}
+          className="fixed top-4 right-4 p-2.5 rounded-lg z-50
                      backdrop-blur-md border transition-all
-                     ${hasApiKey
-              ? 'bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:bg-white/10'
-              : 'bg-cyan-500/20 border-cyan-400/50 text-cyan-300 animate-pulse'}`}
-          title={hasApiKey ? "Change API settings" : "Configure API Key"}
+                     bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:bg-white/10"
+          title="Model Settings"
         >
-          <Key className="w-4 h-4" />
+          <Bot className="w-4 h-4" />
         </button>
 
         {/* Feedback Button - Bottom Left */}
@@ -513,24 +492,16 @@ ${context}`;
             </div>
           </div>
 
-          {/* API Key Warning */}
-          {!hasApiKey && (
-            <div className="mb-6 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm flex items-center gap-2">
-              <Key className="w-4 h-4" />
-              <span>Please configure your API key first by clicking the key icon above.</span>
-            </div>
-          )}
-
           {/* Input */}
           <div className="w-full relative group">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={hasApiKey ? "Enter your first question..." : "Configure API key to start..."}
-              disabled={isCreatingNode || !hasApiKey}
+              placeholder="Enter your first question..."
+              disabled={isCreatingNode}
               rows={3}
-              className={`w-full px-6 py-4 rounded-xl
+              className="w-full px-6 py-4 rounded-xl
                 bg-white/5 backdrop-blur-md
                 border border-white/10
                 text-white placeholder-white/30
@@ -538,18 +509,16 @@ ${context}`;
                 transition-all duration-300
                 disabled:opacity-50
                 text-lg resize-none
-                shadow-2xl
-                ${!hasApiKey ? 'cursor-not-allowed' : ''}`}
+                shadow-2xl"
             />
             {isCreatingNode && (
               <div className="absolute right-4 top-4">
                 <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
               </div>
             )}
-            {/* Send button */}
             <button
               onClick={handleCreateRootNode}
-              disabled={isCreatingNode || !inputValue.trim() || !hasApiKey}
+              disabled={isCreatingNode || !inputValue.trim()}
               className="absolute right-4 bottom-4 px-4 py-1.5 rounded-lg
                             bg-cyan-500/20 hover:bg-cyan-500/30
                             text-cyan-300 text-sm
@@ -565,8 +534,8 @@ ${context}`;
           </p>
         </div>
 
-        {/* API Settings Modal */}
-        {showApiSettings && renderApiSettingsModal()}
+        {/* Model Settings Modal */}
+        {showModelSettings && renderModelSettingsModal()}
       </div>
     );
   }
@@ -609,15 +578,15 @@ ${context}`;
           </svg>
         </button>
 
-        {/* API Key Settings */}
+        {/* Model Settings */}
         <button
-          onClick={() => setShowApiSettings(true)}
-          title="API Settings"
+          onClick={() => setShowModelSettings(true)}
+          title="Model Settings"
           className="p-2 rounded-lg bg-white/5 backdrop-blur-md border border-white/10
                      text-white/40 hover:text-white/70 hover:bg-white/10
                      transition-all"
         >
-          <Key className="w-4 h-4" />
+          <Bot className="w-4 h-4" />
         </button>
 
         {/* Save status */}
@@ -652,8 +621,8 @@ ${context}`;
         onCancel={() => setShowResetConfirm(false)}
       />
 
-      {/* API Settings Modal */}
-      {showApiSettings && renderApiSettingsModal()}
+      {/* Model Settings Modal */}
+      {showModelSettings && renderModelSettingsModal()}
     </div>
   );
 }
