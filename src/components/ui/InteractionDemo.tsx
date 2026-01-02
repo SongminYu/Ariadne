@@ -16,7 +16,7 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
     const [typedText, setTypedText] = useState('');
 
     const demoQuestion = 'What is entropy?';
-    const followUpQuestion = 'Can you explain reversible processes in more detail?';
+    const followUpQuestion = 'Can you further explain this?';
 
     // Animation loop
     useEffect(() => {
@@ -24,7 +24,7 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
             { name: 'idle', duration: 1500 },
             { name: 'selecting', duration: 800 },
             { name: 'selected', duration: 600 },
-            { name: 'typing', duration: 4500 },
+            { name: 'typing', duration: 2800 },
             { name: 'sending', duration: 1200 },
             { name: 'fading', duration: 800 },
         ] as const;
@@ -125,28 +125,36 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
                 {/* Answer Section */}
                 <div className="px-5 py-4 relative">
                     <div
-                        className="text-sm leading-relaxed space-y-2"
+                        className="text-sm leading-relaxed space-y-2 text-justify hyphens-auto"
                         style={{ color: 'var(--text-secondary)' }}
                     >
                         <p>
-                            Entropy is a measure of disorder in a system. In thermodynamics, it determines the direction of{' '}
-                            <span
-                                className={`relative inline transition-all duration-300 rounded px-0.5 ${isTextSelected
-                                    ? 'text-white'
-                                    : ''
-                                    }`}
-                                style={{
-                                    background: isTextSelected ? 'var(--accent-primary)' : 'transparent',
-                                }}
-                            >
-                                reversible processes
-                                {/* Selection cursor animation */}
-                                {phase === 'selecting' && (
-                                    <span
-                                        className="absolute -right-0.5 top-0 h-full w-0.5 animate-pulse"
-                                        style={{ background: 'var(--accent-primary)' }}
-                                    />
-                                )}
+                            Entropy is a measure of disorder in a system. In thermodynamics, it determines the direction of spontaneous and{' '}
+                            <span className="relative whitespace-nowrap inline-block align-bottom">
+                                {/* Background & Cursor Layer */}
+                                <span
+                                    className="absolute left-0 top-0.5 bottom-0.5 rounded bg-[var(--accent-primary)]"
+                                    style={{
+                                        width: phase === 'idle' ? '0%' : '100%',
+                                        transition: phase === 'selecting' ? 'width 800ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none'
+                                    }}
+                                >
+                                    {/* Cursor Follower (only during selecting) */}
+                                    {phase === 'selecting' && (
+                                        <span className="absolute -right-[1px] -top-0.5 -bottom-0.5 w-[2px] bg-[var(--accent-primary)]" />
+                                    )}
+                                </span>
+
+                                {/* Text Layer */}
+                                <span
+                                    className="relative z-10 transition-colors"
+                                    style={{
+                                        color: phase === 'idle' ? 'inherit' : '#fff',
+                                        transitionDuration: phase === 'selecting' ? '800ms' : '0ms'
+                                    }}
+                                >
+                                    reversible processes
+                                </span>
                             </span>
                             .
                         </p>
@@ -162,7 +170,7 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
                             : 'opacity-0 translate-y-2 pointer-events-none'
                             }`}
                         style={{
-                            bottom: '-80px',
+                            bottom: '-90px', // Adjusted to sit better with new spacing
                             zIndex: 10,
                         }}
                     >
@@ -237,7 +245,7 @@ export default function InteractionDemo({ theme }: InteractionDemoProps) {
                 </div>
 
                 {/* Bottom padding to make room for popover */}
-                <div className="h-20" />
+                <div className="h-28" />
             </div>
 
             {/* Decorative glow effect */}
