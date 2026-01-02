@@ -7,7 +7,7 @@ import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
-import { Bot, Mail, Sun, Moon } from 'lucide-react';
+import { Bot, Mail, Sun, Moon, Upload } from 'lucide-react';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { generateSingleFileHTML } from '@/utils/export';
 import { API_KEY } from '@/config/apiConfig';
@@ -35,6 +35,8 @@ export default function Home() {
     setSelectedAnchor,
     setSelectedNodeForSheet,
     clearAll,
+    setNodes,
+    setEdges,
   } = useCanvasStore();
 
   const [inputValue, setInputValue] = useState('');
@@ -66,6 +68,44 @@ export default function Home() {
     setShowModelSettings(false);
   }, [selectedModel]);
 
+  // Handle .ariadne project file upload
+  const handleProjectFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file extension
+    if (!file.name.endsWith('.ariadne')) {
+      alert('Please upload a valid .ariadne file');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const projectData = JSON.parse(content);
+
+        // Validate project data structure
+        if (!projectData.version || !projectData.nodes || !projectData.edges) {
+          throw new Error('Invalid project file format');
+        }
+
+        // Restore nodes and edges
+        setNodes(projectData.nodes);
+        setEdges(projectData.edges);
+
+        console.log('Project restored:', projectData.nodes.length, 'nodes,', projectData.edges.length, 'edges');
+      } catch (error) {
+        console.error('Failed to parse project file:', error);
+        alert('Failed to load project: Invalid file format');
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset input value to allow re-uploading same file
+    event.target.value = '';
+  }, [setNodes, setEdges]);
+
   // Export as ZIP (HTML + Markdown)
   const exportAsZip = useCallback(async (nodesToExport: typeof nodes, edgesToExport: typeof edges) => {
     if (nodesToExport.length === 0) {
@@ -81,7 +121,7 @@ export default function Home() {
       const dateStr = new Date().toISOString().slice(0, 10);
       const baseName = `ariadne-export-${dateStr}`;
 
-      // Generate HTML content (unchanged)
+      // Generate HTML content
       const htmlContent = generateSingleFileHTML(nodesToExport, edgesToExport);
       zip.file(`${baseName}.html`, htmlContent);
 
@@ -89,6 +129,15 @@ export default function Home() {
       const { generateMarkdownSummary } = await import('@/utils/export');
       const mdContent = generateMarkdownSummary(nodesToExport, baseName);
       zip.file(`${baseName}.md`, mdContent);
+
+      // Generate .ariadne project file (JSON format for project restore)
+      const projectData = {
+        version: '1.0',
+        createdAt: new Date().toISOString(),
+        nodes: nodesToExport,
+        edges: edgesToExport,
+      };
+      zip.file(`${baseName}.ariadne`, JSON.stringify(projectData, null, 2));
 
       // Generate ZIP and download
       const blob = await zip.generateAsync({ type: 'blob' });
@@ -571,6 +620,28 @@ ${context}`;
                 >
                   Send
                 </button>
+              )}
+              {/* Upload button - visible when input is empty */}
+              {!isCreatingNode && !inputValue.trim() && (
+                <label
+                  className="absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer group/upload"
+                  title="Upload .ariadne file to continue working on a previous project"
+                >
+                  <Upload className="w-5 h-5 text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors" />
+                  <input
+                    type="file"
+                    accept=".ariadne"
+                    onChange={handleProjectFileUpload}
+                    className="hidden"
+                  />
+                  {/* Tooltip */}
+                  <span className="absolute right-0 top-full mt-2 px-3 py-2 text-xs whitespace-nowrap
+                                   bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg shadow-lg
+                                   text-[var(--text-secondary)] opacity-0 group-hover/upload:opacity-100
+                                   transition-opacity pointer-events-none">
+                    Upload .ariadne file to continue
+                  </span>
+                </label>
               )}
             </div>
 
