@@ -178,6 +178,8 @@ export default function Home() {
 - Use **headings** (##, ###) to divide major sections
 - Use **bullet points** (-) or **numbered lists** (1. 2. 3.) to present multiple items clearly
 - Use **bold** for key terms and **italic** for emphasis
+- **IMPORTANT**: Add spaces around bold text for reliable rendering (e.g., "告诉我们 **事实** 。")
+- **DO NOT** use bold on quoted text (e.g., use "Hello" not **"Hello"** or "**Hello**")
 - Use LaTeX for mathematical formulas: inline $E = mc^2$ or block $$\\int_a^b f(x)dx$$
 - Use \`code\` for inline code and fenced code blocks with language for longer code
 - Use **tables** when comparing items or presenting structured data
