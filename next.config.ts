@@ -6,10 +6,9 @@ const nextConfig: NextConfig = {
   // Static export for GitHub Pages
   output: 'export',
 
-  // For GitHub Pages: /repo-name/ path
-  // Change 'Ariadne' to your actual repo name if different
-  basePath: isProd ? '/Ariadne' : '',
-  assetPrefix: isProd ? '/Ariadne/' : '',
+  // For custom domain on GitHub Pages, we don't need basePath
+  // basePath: isProd ? '/Ariadne' : '',
+  // assetPrefix: isProd ? '/Ariadne/' : '',
 
   // Disable image optimization (not supported in static export)
   images: {
