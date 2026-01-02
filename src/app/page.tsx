@@ -7,12 +7,13 @@ import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { Node } from '@xyflow/react';
-import { Bot, Mail, Sun, Moon, Upload } from 'lucide-react';
+import { Bot, Mail, Sun, Moon, Upload, Coffee } from 'lucide-react';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { generateSingleFileHTML } from '@/utils/export';
 import { API_KEY } from '@/config/apiConfig';
 import ThemeBackground from '@/components/ui/ThemeBackground';
 import InteractionDemo from '@/components/ui/InteractionDemo';
+import BuyMeCoffee from '@/components/ui/BuyMeCoffee';
 
 // Dynamically import Canvas component to avoid SSR issues
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
@@ -534,17 +535,21 @@ ${context}`;
           </button>
         </div>
 
-        {/* Feedback Button - Bottom Right */}
-        <a
-          href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
-          className="fixed bottom-6 right-6 px-4 py-2 rounded-full z-50
-                     glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
-                     transition-all flex items-center gap-2 hover:shadow-md text-sm font-medium"
-          title="Send Feedback"
-        >
-          <Mail className="w-4 h-4" />
-          <span>Feedback</span>
-        </a>
+        {/* Controls - Bottom Right */}
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+          <BuyMeCoffee />
+
+          <a
+            href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
+            className="px-4 py-2 rounded-full
+                       glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
+                       transition-all flex items-center gap-2 hover:shadow-md text-sm font-medium"
+            title="Send Feedback"
+          >
+            <Mail className="w-4 h-4" />
+            <span>Feedback</span>
+          </a>
+        </div>
 
         {/* Background Decorative Elements */}
         {theme === 'light' ? (
@@ -722,17 +727,21 @@ ${context}`;
         </button>
       </div>
 
-      {/* Feedback Button - Bottom Left */}
-      <a
-        href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
-        className="fixed bottom-6 right-6 px-3 py-1.5 rounded-full z-50
-                   glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
-                   transition-all flex items-center gap-2 text-xs opacity-50 hover:opacity-100"
-        title="Send Feedback"
-      >
-        <Mail className="w-3 h-3" />
-        <span>Feedback</span>
-      </a>
+      {/* Controls - Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        <BuyMeCoffee size="small" />
+
+        <a
+          href="mailto:songmin.yu@outlook.com?subject=Ariadne Feedback"
+          className="px-3 py-1.5 rounded-full
+                     glass-panel text-[var(--text-secondary)] hover:text-[var(--accent-primary)]
+                     transition-all flex items-center gap-2 text-xs hover:opacity-100"
+          title="Send Feedback"
+        >
+          <Mail className="w-3 h-3" />
+          <span>Feedback</span>
+        </a>
+      </div>
 
       {/* Reset confirm dialog */}
       <ConfirmDialog

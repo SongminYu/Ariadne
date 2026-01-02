@@ -35,6 +35,11 @@ This design is built on a practical insight: in any coherent inquiry, the starti
 - 🗺️ **Visual overview** — See your entire exploration at a glance
 - 🔀 **Natural branching** — Return to any node to start a new line of inquiry
 
+## Features under Discussion
+
+- Context awareness across branches for LLM to generate answers.
+- Possibility to add root nodes.
+
 ---
 
 *Built with Next.js, React Flow, and modern AI APIs.*
