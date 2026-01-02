@@ -2,11 +2,35 @@
 
 import { useThemeStore } from '@/stores/useThemeStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+
+// Generate fixed positions for particles in a grid pattern
+function generateGridPositions(count: number) {
+    const cols = Math.ceil(Math.sqrt(count));
+    const rows = Math.ceil(count / cols);
+    const positions: { top: number; left: number }[] = [];
+
+    for (let i = 0; i < count; i++) {
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        // Add some randomness within each grid cell
+        const cellWidth = 100 / cols;
+        const cellHeight = 100 / rows;
+        positions.push({
+            top: row * cellHeight + Math.random() * cellHeight * 0.6 + cellHeight * 0.2,
+            left: col * cellWidth + Math.random() * cellWidth * 0.6 + cellWidth * 0.2
+        });
+    }
+    return positions;
+}
 
 export default function ThemeBackground() {
     const { theme } = useThemeStore();
     const [mounted, setMounted] = useState(false);
+
+    // Pre-generate positions to avoid hydration mismatch
+    const leafPositions = useMemo(() => generateGridPositions(12), []);
+    const starPositions = useMemo(() => generateGridPositions(12), []);
 
     useEffect(() => {
         setMounted(true);
@@ -27,22 +51,48 @@ export default function ThemeBackground() {
                         className="absolute inset-0"
                     >
                         {/* Day Mode: Spring Morning Mist */}
-                        {/* Large soft green blob top left */}
                         <div
                             className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-40"
                             style={{ background: 'radial-gradient(circle, #D8E2DC 0%, transparent 70%)' }}
                         />
-                        {/* Soft warm blob bottom right */}
                         <div
                             className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] rounded-full blur-[100px] opacity-30"
                             style={{ background: 'radial-gradient(circle, #E1E8E4 0%, transparent 70%)' }}
                         />
-                        {/* Floating subtle "leaves" or light spots */}
-                        <motion.div
-                            animate={{ y: [0, -20, 0], opacity: [0.3, 0.5, 0.3] }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute top-[30%] right-[20%] w-[300px] h-[300px] rounded-full blur-[80px] bg-[#6B9080]/10"
-                        />
+
+                        {/* 12 Floating Leaf Particles - appear, drift, fade out */}
+                        <div className="absolute inset-0">
+                            {leafPositions.map((pos, i) => (
+                                <motion.svg
+                                    key={`leaf-${i}`}
+                                    className="absolute"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="#84A98C"
+                                    style={{
+                                        top: `${pos.top}%`,
+                                        left: `${pos.left}%`,
+                                    }}
+                                    initial={{ opacity: 0, y: 0, rotate: Math.random() * 360 }}
+                                    animate={{
+                                        opacity: [0, 0.6, 0.5, 0],
+                                        y: [0, -40, -80],
+                                        x: [0, (Math.random() - 0.5) * 30, (Math.random() - 0.5) * 50],
+                                        rotate: [0, 45, 90]
+                                    }}
+                                    transition={{
+                                        duration: 6 + i * 0.5,
+                                        repeat: Infinity,
+                                        delay: i * 0.8,
+                                        ease: "easeInOut"
+                                    }}
+                                >
+                                    {/* Leaf SVG path */}
+                                    <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z" />
+                                </motion.svg>
+                            ))}
+                        </div>
                     </motion.div>
                 ) : (
                     <motion.div
@@ -54,36 +104,35 @@ export default function ThemeBackground() {
                         className="absolute inset-0"
                     >
                         {/* Night Mode: Nature at Night */}
-                        {/* Deep Blue/Indigo glow top center */}
                         <div
                             className="absolute -top-[10%] left-[20%] w-[60%] h-[50%] rounded-full blur-[130px] opacity-40"
                             style={{ background: 'radial-gradient(circle, #1E293B 0%, transparent 70%)' }}
                         />
-                        {/* Secondary Glow */}
                         <div
                             className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] rounded-full blur-[100px] opacity-20"
                             style={{ background: 'radial-gradient(circle, #38BDF8 0%, transparent 70%)' }}
                         />
 
-                        {/* Fireflies / Stars */}
+                        {/* 12 Stars - appear, twinkle, fade out */}
                         <div className="absolute inset-0">
-                            {[...Array(5)].map((_, i) => (
+                            {starPositions.map((pos, i) => (
                                 <motion.div
-                                    key={i}
-                                    className="absolute w-1 h-1 bg-sky-200 rounded-full shadow-[0_0_8px_rgba(186,230,253,0.8)]"
+                                    key={`star-${i}`}
+                                    className="absolute w-1.5 h-1.5 bg-sky-200 rounded-full shadow-[0_0_10px_rgba(186,230,253,0.9)]"
                                     style={{
-                                        top: `${Math.random() * 80 + 10}%`,
-                                        left: `${Math.random() * 80 + 10}%`,
+                                        top: `${pos.top}%`,
+                                        left: `${pos.left}%`,
                                     }}
+                                    initial={{ opacity: 0, scale: 0.3 }}
                                     animate={{
-                                        opacity: [0, 0.8, 0],
-                                        scale: [0.5, 1.2, 0.5],
-                                        y: [0, -15, 0]
+                                        opacity: [0, 0.9, 0.7, 0],
+                                        scale: [0.3, 1.2, 1, 0.3],
+                                        y: [0, -10, -20]
                                     }}
                                     transition={{
-                                        duration: 3 + Math.random() * 4,
+                                        duration: 4 + i * 0.3,
                                         repeat: Infinity,
-                                        delay: Math.random() * 2,
+                                        delay: i * 0.6,
                                         ease: "easeInOut"
                                     }}
                                 />

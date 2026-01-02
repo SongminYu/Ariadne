@@ -68,6 +68,9 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
     <title>Ariadne Export</title>
     <!-- KaTeX CSS for Math Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <!-- Highlight.js for Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <!-- Markdown-it and plugins -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -336,10 +339,14 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             font-style: italic;
         }
 
-        /* Question Section */
+        /* Question Section - matches DetailModal.tsx */
         .question-section {
             padding: 24px;
             border-bottom: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.02);
+        }
+        [data-theme="dark"] .question-section {
+            background: rgba(255, 255, 255, 0.02);
         }
         .section-label {
             font-size: 12px;
@@ -354,6 +361,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             color: var(--text-primary);
             line-height: 1.5;
             font-family: var(--font-serif);
+            font-weight: 500;
         }
 
         /* Answer Section */
@@ -369,9 +377,12 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             font-family: var(--font-serif);
         }
         .prose p {
-            margin-top: 1.25em;
-            margin-bottom: 1.25em;
+            margin-top: 0.75em;
+            margin-bottom: 0.75em;
             line-height: 1.75;
+        }
+        .prose > p:first-child {
+            margin-top: 0;
         }
         .prose ul, .prose ol {
             margin-top: 1.25em;
@@ -392,10 +403,11 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             font-size: 0.9em;
         }
         .prose blockquote {
-            border-left: 3px solid var(--accent-tertiary);
+            border-left: 4px solid var(--card-border);
             padding-left: 1rem;
             font-style: italic;
             color: var(--text-secondary);
+            margin: 0.75em 0;
         }
         .prose a { color: var(--accent-primary); text-decoration: none; }
         
@@ -421,22 +433,75 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             vertical-align: top;
         }
         
-        /* H2 headings in prose */
-        .prose h2 {
+        /* H1/H2/H3 headings in prose - match web app styling */
+        .prose h1 {
             font-size: 1.25em;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 1.5em;
             margin-bottom: 0.75em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+        .prose h2 {
+            font-size: 1.125em;
+            font-weight: 700;
+            margin-top: 1.25em;
+            margin-bottom: 0.5em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid var(--card-border);
             color: var(--text-primary);
         }
         .prose h3 {
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: 600;
-            margin-top: 1.25em;
+            margin-top: 1em;
             margin-bottom: 0.5em;
             color: var(--text-primary);
         }
-
+        
+        /* Code block styling - compact like web app */
+        .prose pre, .prose pre.hljs {
+            background: #0d1117;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 0.75em 0;
+        }
+        .prose pre code, .prose pre.hljs code {
+            background: transparent !important;
+            padding: 0;
+            font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+            display: block;
+            color: #c9d1d9;  /* Default code color for github-dark theme */
+        }
+        /* Allow highlight.js colors to override */
+        .prose pre code .hljs-keyword,
+        .prose pre code .hljs-built_in { color: #ff7b72; }
+        .prose pre code .hljs-string { color: #a5d6ff; }
+        .prose pre code .hljs-comment { color: #8b949e; }
+        .prose pre code .hljs-number { color: #79c0ff; }
+        .prose pre code .hljs-function { color: #d2a8ff; }
+        .prose pre code .hljs-title { color: #d2a8ff; }
+        .prose pre code .hljs-params { color: #c9d1d9; }
+        .prose pre code .hljs-attr { color: #79c0ff; }
+        /* Hide br tags inside code blocks (caused by breaks:true) */
+        .prose pre br, .prose pre.hljs br {
+            display: none;
+        }
+        /* Inline code */
+        .prose code:not(pre code) {
+            background: var(--bg-dots);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-secondary);
+            font-family: monospace;
+            font-size: 0.9em;
+        }
         /* Anchor Highlight */
         .anchor-highlight {
             background: rgba(14, 165, 233, 0.1);
@@ -567,6 +632,7 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
         const backBtn = document.getElementById('back-btn');
 
         // Initialize markdown-it with GFM-like options and math support
+        // Note: Code highlighting is done AFTER rendering via hljs.highlightElement()
         let md;
         try {
             md = window.markdownit({
@@ -718,27 +784,25 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
                 html += '</div>';
             }
 
-            // Question
+            // Question - matches DetailModal.tsx (no emoji)
             html += '<div class="question-section">';
-            html += '<p class="section-label">💭 Question</p>';
+            html += '<p class="section-label">Question</p>';
             html += '<p class="question-text">' + escapeHtml(content.user_prompt) + '</p>';
             html += '</div>';
 
-            // Answer
+            // Answer - no label, direct content (matches web app)
             html += '<div class="answer-section">';
-            html += '<p class="section-label">✨ Answer</p>';
             html += '<div class="prose">';
             let answerHtml = md.render(content.ai_response || '');
             answerHtml = highlightAnchors(answerHtml, anchors);
             html += answerHtml;
             html += '</div>';
-            html += '<p class="selection-hint">💡 Select any text to ask a follow-up question</p>';
             html += '</div>';
 
             // Explored Links
             if (anchors.length > 0) {
                 html += '<div class="explored-section">';
-                html += '<p class="section-label">🔗 Explored from this answer (' + anchors.length + ')</p>';
+                html += '<p class="section-label">Explored Links (' + anchors.length + ')</p>';
                 html += '<div class="explored-chips">';
                 anchors.forEach(a => {
                     html += '<div class="explored-chip" onclick="navigateToNode(' + "'" + a.childId + "'" + ')" title="' + escapeHtml(a.question) + '">';
@@ -751,6 +815,20 @@ export function generateSingleFileHTML(nodes: Node<NodeData>[], edges: Edge[]): 
             }
 
             modalBody.innerHTML = html;
+            
+            // Apply syntax highlighting to code blocks after rendering
+            if (window.hljs) {
+                const codeBlocks = modalBody.querySelectorAll('pre code');
+                console.log('hljs loaded, found code blocks:', codeBlocks.length);
+                codeBlocks.forEach((block) => {
+                    // Add hljs class to parent pre for styling
+                    block.parentElement.classList.add('hljs');
+                    window.hljs.highlightElement(block);
+                });
+            } else {
+                console.warn('highlight.js not loaded - window.hljs is:', typeof window.hljs);
+            }
+            
             modalOverlay.classList.add('visible');
 
             // Add click handlers for anchor highlights

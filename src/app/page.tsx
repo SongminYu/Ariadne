@@ -581,15 +581,13 @@ ${context}`;
   return (
     <div className="w-full h-screen bg-[var(--bg-primary)] transition-colors duration-500 overflow-hidden relative">
       <ThemeBackground />
-      <div className="absolute inset-0 opacity-40 mix-blend-multiply pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, var(--bg-dots) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
       <Canvas />
 
       {/* Detail modal (floating centered) */}
       <DetailModal onFollowUp={handleFollowUp} />
 
       {/* Top toolbar - Integrated Capsule */}
-      <div className="fixed top-6 right-6 z-50 flex items-center p-1.5 rounded-full glass-panel shadow-sm">
+      <div className="fixed top-6 right-6 z-50 flex items-center gap-2 p-1.5 rounded-full glass-panel shadow-sm">
 
         {/* Theme Toggle (Integrated) */}
         <button
@@ -599,8 +597,6 @@ ${context}`;
         >
           {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
-
-        <div className="w-px h-4 bg-[var(--text-muted)] mx-1 opacity-30"></div>
 
         {/* Export ZIP */}
         <button
@@ -634,11 +630,6 @@ ${context}`;
         >
           <Bot className="w-4 h-4" />
         </button>
-
-        {/* Save status */}
-        <div className="flex items-center gap-2 pl-3 pr-2 border-l border-[var(--text-muted)] border-opacity-20 ml-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-        </div>
       </div>
 
       {/* Feedback Button - Bottom Left */}

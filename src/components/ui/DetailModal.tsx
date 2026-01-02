@@ -7,7 +7,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
 import 'katex/dist/katex.min.css';
+import 'highlight.js/styles/github-dark.css';
 import { X, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState, Fragment, useRef } from 'react';
 import SelectionPopover from './SelectionPopover';
@@ -158,7 +160,7 @@ function HighlightedMarkdown({
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex]}
+            rehypePlugins={[rehypeKatex, rehypeHighlight]}
             components={components}
         >
             {content}
@@ -360,18 +362,20 @@ export default function DetailModal({ onFollowUp }: DetailModalProps) {
                                                     onMouseUp={handleTextSelect}
                                                 >
                                                     <div className="prose prose-base max-w-none font-serif
-                                                               [&_p]:text-[var(--text-primary)] [&_p]:leading-loose
-                                                               [&_h1]:text-[var(--text-primary)] [&_h2]:text-[var(--text-primary)] [&_h3]:text-[var(--text-primary)]
+                                                               [&_p]:text-[var(--text-primary)] [&_p]:leading-relaxed [&_p]:my-3
+                                                               [&_h1]:text-[var(--text-primary)] [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:pb-2 [&_h1]:border-b [&_h1]:border-[var(--card-border)]
+                                                               [&_h2]:text-[var(--text-primary)] [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:pb-2 [&_h2]:border-b [&_h2]:border-[var(--card-border)]
+                                                               [&_h3]:text-[var(--text-primary)] [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2
                                                                [&_strong]:text-[var(--text-primary)] [&_strong]:font-bold
                                                                [&_code]:bg-[var(--bg-dots)] [&_code]:text-[var(--accent-secondary)] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5
-                                                               [&_pre]:bg-[var(--bg-primary)] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-lg
-                                                               [&_blockquote]:border-l-[var(--accent-tertiary)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--text-secondary)]
+                                                               [&_pre]:bg-[#0d1117] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:my-3
+                                                               [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--card-border)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--text-secondary)] [&_blockquote]:my-3
                                                                [&_a]:text-[var(--accent-primary)] hover:[&_a]:underline
-                                                               [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-[var(--text-primary)]
-                                                               [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-[var(--text-primary)]
-                                                               [&_li]:my-1
-                                                               [&_table]:w-full [&_table]:border-collapse
-                                                               [&_th]:border [&_th]:border-[var(--card-border)] [&_th]:p-2 [&_th]:text-[var(--text-primary)]
+                                                               [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-[var(--text-primary)] [&_ul]:my-3
+                                                               [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-[var(--text-primary)] [&_ol]:my-3
+                                                               [&_li]:my-1 [&_li]:leading-relaxed
+                                                               [&_table]:w-full [&_table]:border-collapse [&_table]:my-3
+                                                               [&_th]:border [&_th]:border-[var(--card-border)] [&_th]:p-2 [&_th]:text-[var(--text-primary)] [&_th]:font-semibold
                                                                [&_td]:border [&_td]:border-[var(--card-border)] [&_td]:p-2 [&_td]:text-[var(--text-secondary)]
                                                                "
                                                     >
