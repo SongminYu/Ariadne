@@ -682,49 +682,48 @@ ${context}`;
       <DetailModal onFollowUp={handleFollowUp} />
 
       {/* Top toolbar - Integrated Capsule */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-2 p-1.5 rounded-full glass-panel shadow-sm">
-
-        {/* Theme Toggle (Integrated) */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
-          title={theme === 'light' ? "Switch to Night Mode" : "Switch to Day Mode"}
-        >
-          {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-        </button>
-
-        {/* Export ZIP */}
-        <button
-          onClick={() => exportAsZip(nodes, edges)}
-          title="Export as ZIP"
-          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-        </button>
-
-        {/* Reset */}
+      {/* Top toolbar - Split Layout */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        {/* Clear Button (Extracted) */}
         <button
           onClick={() => setShowResetConfirm(true)}
-          title="Reset Canvas"
-          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--accent-secondary)] hover:bg-[var(--card-bg)] transition-all"
+          className="px-4 py-3 rounded-full glass-panel shadow-sm text-[var(--text-secondary)] hover:text-[var(--accent-secondary)] hover:shadow-md transition-all text-xs font-medium tracking-wide uppercase"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+          Clear
         </button>
 
-        {/* Model Settings */}
-        <button
-          onClick={() => setShowModelSettings(true)}
-          title="Model Settings"
-          className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
-        >
-          <Bot className="w-4 h-4" />
-        </button>
+        {/* Capsule for remaining tools */}
+        <div className="flex items-center gap-2 px-1.5 py-1 rounded-full glass-panel shadow-sm">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
+            title={theme === 'light' ? "Switch to Night Mode" : "Switch to Day Mode"}
+          >
+            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+
+          {/* Export ZIP */}
+          <button
+            onClick={() => exportAsZip(nodes, edges)}
+            title="Export as ZIP"
+            className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+
+          {/* Model Settings */}
+          <button
+            onClick={() => setShowModelSettings(true)}
+            title="Model Settings"
+            className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all"
+          >
+            <Bot className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Controls - Bottom Right */}
