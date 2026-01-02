@@ -2,9 +2,9 @@
 
 **Ariadne** is an AI-powered canvas for non-linear thinking. It transforms the traditional chat interface into a visual thought map where ideas branch, connect, and evolve naturally.
 
-> ✨ **No registration required** — Just open and start exploring. Bring your own API key (Google Gemini), and you're ready to go. When you're done, download your entire thought map as a ZIP file containing both an interactive HTML and a Markdown summary.
+> ✨ **No registration required** — Just open and start exploring. When you're done, if you want, download your entire thought map as a ZIP file containing both an interactive HTML and a Markdown summary.
 > 
-> 📝 **Currently only Google Gemini supported** — This is because the site is hosted on GitHub Pages (static hosting), and Google is the only major AI provider that allows direct browser-to-API calls without CORS restrictions. Get your Google API-Key here: https://aistudio.google.com/api-keys.
+> 📝 **Currently only Gemini supported** — This is because the site is hosted on GitHub Pages (static hosting), and Google is the only major AI provider that allows direct browser-to-API calls without CORS restrictions. 
 
 ## The Problem
 
