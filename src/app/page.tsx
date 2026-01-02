@@ -179,6 +179,7 @@ export default function Home() {
 - Use \`code\` for inline code and fenced code blocks with language for longer code
 - Use **tables** when comparing items or presenting structured data
 - Use **blockquotes** (>) for definitions or important notes
+- **DO NOT** use horizontal rules (---) to separate sections
 
 ### Engagement & Curiosity
 - Introduce 1-2 **advanced concepts or interesting connections** that might spark further exploration
