@@ -104,57 +104,54 @@ export default function SelectionPopover({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.15 }}
-                    className={`z-[100] w-[360px] bg-[#0a0a1a]/90 backdrop-blur-xl 
-                           border border-white/10 rounded-xl shadow-2xl overflow-hidden
-                           flex flex-col pointer-events-auto ${variant === 'fixed' ? 'fixed' : 'absolute'}`}
+                    className={`z-[100] bg-[var(--card-bg)] backdrop-blur-xl 
+                           border border-[var(--card-border)] rounded-xl shadow-lg overflow-auto
+                           flex flex-col pointer-events-auto resize min-w-[300px] max-w-[600px] min-h-[150px] max-h-[400px]
+                           ${variant === 'fixed' ? 'fixed' : 'absolute'}`}
                     style={{
                         left: adjustedPos.x,
                         top: adjustedPos.y,
+                        width: 360,
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
-                    <div className="bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--card-border)] 
-                          rounded-[var(--radius-md)] shadow-[var(--card-shadow)] 
-                          overflow-hidden w-[340px]">
-                        {/* Selected text preview */}
-                        <div className="px-4 py-2 border-b border-[var(--card-border)] bg-[var(--bg-primary)]/20">
-                            <p className="text-xs text-[var(--text-tertiary)] mb-1">Ask about this:</p>
-                            <p className="text-sm text-[var(--text-secondary)] truncate italic">
-                                &quot;{selectedText}&quot;
-                            </p>
-                        </div>
+                    {/* Selected text preview */}
+                    <div className="px-4 py-2 border-b border-[var(--card-border)] bg-[var(--bg-primary)]/20 rounded-t-xl">
+                        <p className="text-xs text-[var(--text-tertiary)] mb-1">Ask about this:</p>
+                        <p className="text-sm text-[var(--text-secondary)] truncate italic">
+                            &quot;{selectedText}&quot;
+                        </p>
+                    </div>
 
-                        {/* Input area */}
-                        <div className="p-3">
-                            <textarea
-                                ref={inputRef}
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Details / Follow-up..."
-                                rows={2}
-                                className="w-full bg-[var(--bg-dots)]/50 text-[var(--text-primary)] text-sm 
-                                         placeholder:text-[var(--text-tertiary)]
-                                         rounded-[var(--radius-sm)] px-3 py-2 border border-[var(--card-border)]
-                                         focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]/50
-                                         resize-none"
-                            />
-                            <div className="flex items-center justify-between mt-2">
-                                <p className="text-xs text-[var(--text-tertiary)]">
-                                    ⌘/Ctrl + Enter to send
-                                </p>
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={!inputValue.trim() || isLoading}
-                                    className="px-3 py-1 rounded-[var(--radius-sm)]
-                                               bg-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]/30
-                                               text-[var(--accent-primary)] text-xs font-medium
-                                               disabled:opacity-30 disabled:cursor-not-allowed
-                                               transition-all"
-                                >
-                                    Send
-                                </button>
-                            </div>
+                    {/* Input area */}
+                    <div className="p-3 flex-1 flex flex-col">
+                        <textarea
+                            ref={inputRef}
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Details / Follow-up..."
+                            className="w-full flex-1 bg-[var(--bg-dots)]/50 text-[var(--text-primary)] text-sm 
+                                     placeholder:text-[var(--text-tertiary)]
+                                     rounded-lg px-3 py-2 border border-[var(--card-border)]
+                                     focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)]/50
+                                     resize-none min-h-[60px]"
+                        />
+                        <div className="flex items-center justify-between mt-2">
+                            <p className="text-xs text-[var(--text-tertiary)]">
+                                ⌘/Ctrl + Enter to send
+                            </p>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={!inputValue.trim() || isLoading}
+                                className="px-3 py-1 rounded-lg
+                                           bg-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]/30
+                                           text-[var(--accent-primary)] text-xs font-medium
+                                           disabled:opacity-30 disabled:cursor-not-allowed
+                                           transition-all"
+                            >
+                                Send
+                            </button>
                         </div>
                     </div>
                 </motion.div>
