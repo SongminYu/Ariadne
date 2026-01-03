@@ -10,7 +10,6 @@ import { Node } from '@xyflow/react';
 import { Bot, Mail, Sun, Moon, Upload, Coffee } from 'lucide-react';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { generateSingleFileHTML } from '@/utils/export';
-import { API_KEY } from '@/config/apiConfig';
 import ThemeBackground from '@/components/ui/ThemeBackground';
 import InteractionDemo from '@/components/ui/InteractionDemo';
 import BuyMeCoffee from '@/components/ui/BuyMeCoffee';
@@ -240,7 +239,7 @@ export default function Home() {
 
     ### Structure & Formatting (IMPORTANT)
     - **Always use clear Markdown formatting** to organize your response
-    - Use **headings** (##, ###) to divide major sections
+    - Use **headings** (##, ###) to divide major sections (always precede with a blank line)
     - Use **bullet points** (-) or **numbered lists** (1. 2. 3.) to present multiple items clearly
     - Use **bold** for key terms and **italic** for emphasis
     - **IMPORTANT**: Add spaces around bold text for reliable rendering (e.g., "告诉我们 **事实** 。")
@@ -302,20 +301,22 @@ Previous context (for reference):
 ${context}`;
       }
 
-      // Call Gemini API directly (REST API with streaming)
+      // Call Gemini API via Cloudflare Worker proxy (API key is securely stored in Worker)
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:streamGenerateContent?alt=sse&key=${API_KEY}`,
+        'https://ariadne.yu-ceepcas.workers.dev/',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            generationConfig: {
-              temperature: 0.7,
-
+            model: selectedModel,
+            payload: {
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              systemInstruction: { parts: [{ text: systemInstruction }] },
+              generationConfig: {
+                temperature: 0.7,
+              },
             },
           }),
         }
@@ -657,31 +658,40 @@ ${context}`;
             {/* Input */}
             <div className="w-full relative group">
               <textarea
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = 'auto';
+                    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                  }
+                }}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="What's on your mind?"
                 disabled={isCreatingNode}
                 rows={1}
-                style={{ minHeight: '72px' }}
-                className="w-full px-6 py-5 rounded-[var(--radius-lg)]
+                style={{
+                  minHeight: '72px',
+                  maxHeight: '200px',
+                }}
+                className="w-full px-6 py-5 pr-[100px] rounded-[var(--radius-lg)]
                   bg-[var(--card-bg)]
                   border border-[var(--card-border)]
                   text-[var(--text-primary)] placeholder-[var(--text-muted)]
                   text-lg resize-none
                   shadow-[var(--card-shadow)]
                   focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 focus:border-[var(--accent-primary)]
-                  transition-all duration-300"
+                  transition-all duration-300 custom-scrollbar overflow-y-auto"
               />
               {isCreatingNode && (
-                <div className="absolute right-5 top-1/2 -translate-y-1/2">
+                <div className="absolute right-5 bottom-5">
                   <div className="w-5 h-5 border-2 border-[var(--accent-primary)]/30 border-t-[var(--accent-primary)] rounded-full animate-spin" />
                 </div>
               )}
               {!isCreatingNode && inputValue.trim() && (
                 <button
                   onClick={handleCreateRootNode}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 px-5 py-2 rounded-full
+                  className="absolute right-4 bottom-4 px-5 py-2 rounded-full
                                 bg-[var(--accent-primary)] hover:opacity-90 text-white
                                 text-sm font-medium shadow-lg hover:shadow-xl
                                 transition-all"
@@ -692,7 +702,7 @@ ${context}`;
               {/* Upload button - visible when input is empty */}
               {!isCreatingNode && !inputValue.trim() && (
                 <label
-                  className="absolute right-5 top-1/2 -translate-y-1/2 -mt-0.5 cursor-pointer group/upload flex items-center"
+                  className="absolute right-5 bottom-5 cursor-pointer group/upload flex items-center"
                   title="Upload .ariadne file to continue working on a previous project"
                 >
                   <Upload className="w-5 h-5 text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors" />
@@ -703,7 +713,7 @@ ${context}`;
                     className="hidden"
                   />
                   {/* Tooltip */}
-                  <span className="absolute right-0 top-full mt-2 px-3 py-2 text-xs whitespace-nowrap
+                  <span className="absolute right-0 bottom-full mb-2 px-3 py-2 text-xs whitespace-nowrap
                                    bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg shadow-lg
                                    text-[var(--text-secondary)] opacity-0 group-hover/upload:opacity-100
                                    transition-opacity pointer-events-none">

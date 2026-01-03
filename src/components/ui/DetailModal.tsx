@@ -157,13 +157,20 @@ function HighlightedMarkdown({
         }
     }), [anchors, onAnchorClick]);
 
+    // Pre-process content to ensure headers have valid spacing
+    // CommonMark requires a blank line before headers if they follow a paragraph
+    const processedContent = useMemo(() => {
+        if (!content) return '';
+        return content.replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2');
+    }, [content]);
+
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
             rehypePlugins={[rehypeKatex, rehypeHighlight]}
             components={components}
         >
-            {content}
+            {processedContent}
         </ReactMarkdown>
     );
 }
