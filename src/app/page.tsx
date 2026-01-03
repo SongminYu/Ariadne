@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useCanvasStore, NodeData } from '@/stores/useCanvasStore';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import SelectionPopover from '@/components/ui/SelectionPopover';
 import DetailModal from '@/components/ui/DetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
@@ -434,6 +434,17 @@ ${context}`;
     return nodeId;
   }, [addNode, addEdge, calculateNewPosition, nodes, updateNodeContent, selectedModel, customSystemPrompt]);
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isInputExpanded, setIsInputExpanded] = useState(false);
+
+  // Check input height for button positioning
+  useEffect(() => {
+    if (textareaRef.current) {
+      // If scrollHeight is > 76 (min-height 72 + buffer), we consider it expanded
+      setIsInputExpanded(textareaRef.current.scrollHeight > 76);
+    }
+  }, [inputValue]);
+
   // Handle root node creation
   const handleCreateRootNode = async () => {
     if (!inputValue.trim() || isCreatingNode) return;
@@ -659,6 +670,11 @@ ${context}`;
             <div className="w-full relative group">
               <textarea
                 ref={(el) => {
+                  // Assign to ref for scrollHeight check
+                  // @ts-ignore
+                  textareaRef.current = el;
+
+                  // Auto-resize logic (keep existing behavior)
                   if (el) {
                     el.style.height = 'auto';
                     el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
@@ -684,17 +700,18 @@ ${context}`;
                   transition-all duration-300 custom-scrollbar overflow-y-auto"
               />
               {isCreatingNode && (
-                <div className="absolute right-5 bottom-5">
+                <div className={`absolute right-5 ${isInputExpanded ? 'bottom-5' : 'top-1/2 -translate-y-1/2'}`}>
                   <div className="w-5 h-5 border-2 border-[var(--accent-primary)]/30 border-t-[var(--accent-primary)] rounded-full animate-spin" />
                 </div>
               )}
               {!isCreatingNode && inputValue.trim() && (
                 <button
                   onClick={handleCreateRootNode}
-                  className="absolute right-4 bottom-4 px-5 py-2 rounded-full
+                  className={`absolute right-4 px-5 py-2 rounded-full
                                 bg-[var(--accent-primary)] hover:opacity-90 text-white
                                 text-sm font-medium shadow-lg hover:shadow-xl
-                                transition-all"
+                                transition-all
+                                ${isInputExpanded ? 'bottom-4' : 'top-1/2 -translate-y-1/2 -mt-[3px]'}`}
                 >
                   Send
                 </button>
@@ -702,7 +719,7 @@ ${context}`;
               {/* Upload button - visible when input is empty */}
               {!isCreatingNode && !inputValue.trim() && (
                 <label
-                  className="absolute right-5 bottom-5 cursor-pointer group/upload flex items-center"
+                  className={`absolute right-5 cursor-pointer group/upload flex items-center ${isInputExpanded ? 'bottom-5' : 'top-1/2 -translate-y-1/2 -mt-0.5'}`}
                   title="Upload .ariadne file to continue working on a previous project"
                 >
                   <Upload className="w-5 h-5 text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors" />
@@ -713,10 +730,11 @@ ${context}`;
                     className="hidden"
                   />
                   {/* Tooltip */}
-                  <span className="absolute right-0 bottom-full mb-2 px-3 py-2 text-xs whitespace-nowrap
+                  <span className={`absolute right-0 px-3 py-2 text-xs whitespace-nowrap
                                    bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg shadow-lg
                                    text-[var(--text-secondary)] opacity-0 group-hover/upload:opacity-100
-                                   transition-opacity pointer-events-none">
+                                   transition-opacity pointer-events-none
+                                   ${isInputExpanded ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
                     Upload .ariadne file to continue
                   </span>
                 </label>
