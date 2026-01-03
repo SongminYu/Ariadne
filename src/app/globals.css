@@ -126,10 +126,19 @@ h6 {
   border: 1px solid var(--card-border);
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Hidden by default, visible on hover */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.custom-scrollbar:hover {
+  scrollbar-color: var(--bg-dots) transparent;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -137,9 +146,13 @@ h6 {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--bg-dots);
+  background: transparent;
   border-radius: 99px;
   transition: background 0.2s;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: var(--bg-dots);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
