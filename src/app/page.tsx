@@ -730,14 +730,15 @@ ${context}`;
                     onChange={handleProjectFileUpload}
                     className="hidden"
                   />
-                  {/* Tooltip */}
-                  <span className={`absolute right-0 px-3 py-2 text-xs whitespace-nowrap
-                                   bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg shadow-lg
+                  {/* Tooltip - appears to the right of input box, vertically centered */}
+                  <div className="absolute left-full ml-8 top-1/2 -translate-y-1/2 w-64 p-3 text-xs leading-relaxed
+                                   bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg shadow-xl
                                    text-[var(--text-secondary)] opacity-0 group-hover/upload:opacity-100
-                                   transition-opacity pointer-events-none
-                                   ${isInputExpanded ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
-                    Upload .ariadne file to continue
-                  </span>
+                                   transition-opacity pointer-events-none z-10">
+                    <p className="font-medium text-[var(--text-primary)] mb-1">Resume Session</p>
+                    <p>Upload an <strong>.ariadne</strong> file to pick up where you left off.</p>
+                    <p className="mt-1 opacity-80 italic">You can download the file after your exploration, together with your entire session.</p>
+                  </div>
                 </label>
               )}
             </div>
