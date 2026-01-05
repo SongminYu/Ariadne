@@ -13,6 +13,7 @@ import { generateSingleFileHTML } from '@/utils/export';
 import ThemeBackground from '@/components/ui/ThemeBackground';
 import InteractionDemo from '@/components/ui/InteractionDemo';
 import BuyMeCoffee from '@/components/ui/BuyMeCoffee';
+import { CLOUDFLARE_WORKER_URL } from '@/config/apiConfig';
 
 // Dynamically import Canvas component to avoid SSR issues
 const Canvas = dynamic(() => import('@/components/canvas/Canvas'), {
@@ -303,7 +304,7 @@ ${context}`;
 
       // Call Gemini API via Cloudflare Worker proxy (API key is securely stored in Worker)
       const response = await fetch(
-        'https://ariadne.yu-ceepcas.workers.dev/',
+        CLOUDFLARE_WORKER_URL,
         {
           method: 'POST',
           headers: {
