@@ -721,7 +721,6 @@ ${context}`;
               {!isCreatingNode && !inputValue.trim() && (
                 <label
                   className={`absolute right-5 cursor-pointer group/upload flex items-center ${isInputExpanded ? 'bottom-5' : 'top-1/2 -translate-y-1/2 -mt-0.5'}`}
-                  title="Upload .ariadne file to continue working on a previous project"
                 >
                   <Upload className="w-5 h-5 text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors" />
                   <input
